@@ -1,4 +1,4 @@
-package com.rx.example.kotlintest001.activity
+package com.rx.example.kotlintest001.view.activity
 
 import android.app.ProgressDialog
 import android.support.v7.app.AppCompatActivity
@@ -7,8 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Button
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.activity.presenter.ActivityRcvMainPresenter
-import com.rx.example.kotlintest001.network.http.HttpRcvMain
+import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainPresenter
 
 
 class ActivityRcvMain : AppCompatActivity() {
@@ -19,55 +18,50 @@ class ActivityRcvMain : AppCompatActivity() {
 
     private var presenter : ActivityRcvMainPresenter? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_rcv)
 
         findView()
 
+        initData()
+
+        initListener()
+
+        presenter!!.sendHttp()
+    }
+
+    private fun findView()
+    {
+        rcvMain  = findViewById(R.id.rcvMain)  as RecyclerView
+        btnRetry = findViewById(R.id.btnRetry) as Button
+    }
+
+    private fun initData()
+    {
         presenter = ActivityRcvMainPresenter(this,rcvMain!!)
 
         pd = ProgressDialog(this)
-        showProgressDialog("통신 중 입니다.\n Data Size " + HttpRcvMain.DATA_SIZE)
-
         presenter!!.pd = pd
+    }
 
-        presenter!!.sendHttp()
-
+    private fun initListener()
+    {
         rcvMain!!.addOnScrollListener( object : RecyclerView.OnScrollListener()
         {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if ( rcvBottomScrollCheck()) {
-                    showProgressDialog("추가 정보를 가져옵니다.")
+                if ( isCheckRcvScrollBottom()) {
                     presenter!!.rcvShowAddValue(rcvMain!!)
                 }
             }
         })
 
-        btnRetry!!.setOnClickListener {
-            showProgressDialog("Retry..")
-            presenter!!.sendHttp()
-        }
+        btnRetry!!.setOnClickListener { presenter!!.clickBtnRetry() }
     }
 
-    private fun showProgressDialog(msg:String)
-    {
-        if ( pd!!.isShowing )
-            pd!!.dismiss()
-        pd!!.setMessage(msg)
-        pd!!.show()
-    }
-
-    private fun findView()
-    {
-        rcvMain = findViewById(R.id.rcvMain) as RecyclerView
-        btnRetry= findViewById(R.id.btnRetry)as Button
-    }
-
-    private fun rcvBottomScrollCheck(): Boolean
+    private fun isCheckRcvScrollBottom(): Boolean
     {
         val lastVisibleItemPosition = (rcvMain!!.getLayoutManager() as LinearLayoutManager)
                 .findLastCompletelyVisibleItemPosition()

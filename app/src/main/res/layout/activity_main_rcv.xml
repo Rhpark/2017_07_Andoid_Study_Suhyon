@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.rx.example.kotlintest001.activity.ActivityRcvMain">
+    tools:activity="com.rx.example.kotlintest001.view.activity.ActivityRcvMain">
 
     <Button
         android:id="@+id/btnRetry"

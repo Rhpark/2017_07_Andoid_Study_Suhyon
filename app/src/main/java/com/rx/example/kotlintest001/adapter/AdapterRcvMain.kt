@@ -8,15 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.network.model.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.HttpRcvItemData
 
 /**
  */
 public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
 
     companion object {
-        val MAX_ADD_VALUE = 20
+        val MAX_ADD_VALUE = 20  //한번에 추가로 보여줄수 있는 갯수 20
     }
     val context : Context
 

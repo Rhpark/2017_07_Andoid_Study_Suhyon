@@ -9,6 +9,6 @@ import retrofit2.http.Query
 public interface HttpService
 {
     @GET("api/")
-    fun getDatList( @Query("results")  count : String ) : Call<ResponseBody>
+    fun getDatList( @Query("results")  count : Int ) : Call<ResponseBody>
 }
 

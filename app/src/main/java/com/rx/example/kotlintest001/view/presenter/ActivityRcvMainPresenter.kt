@@ -1,6 +1,7 @@
-package com.rx.example.kotlintest001.activity.presenter
+package com.rx.example.kotlintest001.view.presenter
 
 import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
@@ -9,7 +10,8 @@ import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
-import com.rx.example.kotlintest001.network.model.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.HttpRcvItemData
+import com.rx.example.kotlintest001.view.dialog.CustomEditDialog
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -24,19 +26,24 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
 
     private var adapterRcvMain: AdapterRcvMain?         = null
     private var networkController: NetworkController?   = null
-    private var httpRcvItemData:HttpRcvItemData?        = null
+    private var httpRcvItemData: HttpRcvItemData?        = null
     private var httpJudgeListener: HttpJudgeListener?   = null
 
     var pd: ProgressDialog? = null
 
-    constructor(activity: AppCompatActivity, rcvMain: RecyclerView) {
+
+    var dataSize = 5000
+
+    constructor(activity: AppCompatActivity, rcvMain: RecyclerView)
+    {
         Logger.d()
         this.activity = activity
 
         initData(rcvMain)
     }
 
-    private fun initData(rcvMain: RecyclerView) {
+    private fun initData(rcvMain: RecyclerView)
+    {
         networkController = NetworkController()
 
         adapterRcvMain = AdapterRcvMain(activity)
@@ -59,37 +66,31 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
         }
     }
 
+    fun toast(msg:String) = Toast.makeText(activity,msg, Toast.LENGTH_SHORT).show()
+
+    private fun closeProgressDialog()
+    {
+        if ( pd!!.isShowing)    pd!!.dismiss()
+    }
+
     override fun sendHttp() {
-
-        HttpRcvMain(httpJudgeListener, networkController!!)!!.sendHttp()
+        showProgressDialog("통신 중 입니다.\n Data Size " + dataSize)
+        HttpRcvMain(httpJudgeListener, networkController!!, dataSize)!!.sendHttp()
     }
 
-    private fun toast(msg:String) = Toast.makeText(activity,msg, Toast.LENGTH_SHORT).show()
-
-    private fun closeProgressDialog() {
-        if ( pd!!.isShowing)
-            pd!!.dismiss()
-    }
-
-    override fun rcvShowAddValue(rcvMain: RecyclerView) {
-
+    override fun rcvShowAddValue(rcvMain: RecyclerView)
+    {
         if ( httpRcvItemData == null)
-        {
-            closeProgressDialog()
             return
-        }
 
         val TotalSize = httpRcvItemData!!.results.size
-
-        val lastSize = adapterRcvMain!!.listSize
-
-        val defSize = TotalSize - lastSize
+        val lastSize  = adapterRcvMain!!.listSize
+        val defSize   = TotalSize - lastSize
 
         if ( TotalSize <= lastSize || httpRcvItemData!!.results.size <= defSize)
-        {
-            closeProgressDialog()
             return
-        }
+
+        showProgressDialog("추가 정보를 가져옵니다.")
 
         var maxSize = AdapterRcvMain.MAX_ADD_VALUE
 
@@ -113,5 +114,38 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
                     rcvMain.smoothScrollToPosition(adapterRcvMain!!.listSize - currentPosition )
                     closeProgressDialog()
                 }
+    }
+
+    fun clickBtnRetry()
+    {
+        var ced : CustomEditDialog? = null
+
+        val btnOkListener= DialogInterface.OnClickListener {
+            dialogInterface, i ->
+
+            ced!!.closeKeyboard()
+
+            if ( ced!!.isGetNumber())
+            {
+                dataSize = ced!!.getNumber()
+                sendHttp()
+            }
+            else
+                toast("Can not Change Data Size\n please Input Data 1~5000")
+        }
+        val btnCancelListener= DialogInterface.OnClickListener {
+            dialogInterface, i ->   ced!!.closeKeyboard()
+        }
+
+        ced = CustomEditDialog(activity, dataSize, btnOkListener, btnCancelListener)
+        ced.showDlg()
+    }
+
+    private fun showProgressDialog(msg:String)
+    {
+        if ( pd!!.isShowing )
+            pd!!.dismiss()
+        pd!!.setMessage(msg)
+        pd!!.show()
     }
 }

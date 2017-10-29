@@ -1,4 +1,4 @@
-package com.rx.example.kotlintest001.activity.presenter
+package com.rx.example.kotlintest001.view.presenter
 
 import android.support.v7.widget.RecyclerView
 

@@ -24,4 +24,9 @@ public abstract class HttpBase {
     }
 
     public open abstract fun sendHttp()
+
+    open fun fail(msg:String) = httpJudgeListener!!.fail(msg)
+
+    open fun success(hthtpData:Any, msg:String) = httpJudgeListener!!.success(hthtpData,msg)
+
 }

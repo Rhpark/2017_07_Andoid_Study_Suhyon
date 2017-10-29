@@ -1,4 +1,4 @@
-package com.rx.example.kotlintest001.network.model
+package com.rx.example.kotlintest001.model.http
 
 /**
  */

@@ -1,9 +1,4 @@
-package com.rx.example.kotlintest001.network.model
-
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
-
-import java.util.HashMap
+package com.rx.example.kotlintest001.model.http
 
 /**
  */
