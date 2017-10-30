@@ -1,7 +1,6 @@
 package com.rx.example.kotlintest001.view.presenter
 
 import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
@@ -11,10 +10,12 @@ import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
 import com.rx.example.kotlintest001.model.http.HttpRcvItemData
+//import com.rx.example.kotlintest001.model.realm.dto.RealmDTOHttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.CustomEditDialog
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
 import java.util.concurrent.TimeUnit
 
 /**
@@ -26,37 +27,50 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
 
     private var adapterRcvMain: AdapterRcvMain?         = null
     private var networkController: NetworkController?   = null
-    private var httpRcvItemData: HttpRcvItemData?        = null
+    private var httpRcvItemData: HttpRcvItemData?       = null
     private var httpJudgeListener: HttpJudgeListener?   = null
 
     var pd: ProgressDialog? = null
+    var dataSize:Int = 5000
 
-
-    var dataSize = 5000
+//    var realmDTOHttpRcvItemData: RealmDTOHttpRcvItemData?= null
 
     constructor(activity: AppCompatActivity, rcvMain: RecyclerView)
     {
         Logger.d()
         this.activity = activity
 
+        Logger.d("dataSize $dataSize")
         initData(rcvMain)
     }
 
+
     private fun initData(rcvMain: RecyclerView)
     {
+        Realm.init(activity)
+//        realmDTOHttpRcvItemData = RealmDTOHttpRcvItemData(Realm.getDefaultInstance())
         networkController = NetworkController()
 
         adapterRcvMain = AdapterRcvMain(activity)
 
         httpJudgeListener = object : HttpJudgeListener {
             override fun success(gsonConvertData: Any, msg: String) {
+
                 toast(msg)
                 closeProgressDialog()
+
                 httpRcvItemData = gsonConvertData as HttpRcvItemData
                 adapterRcvMain!!.httpRcvItemData = httpRcvItemData
                 adapterRcvMain!!.listSizeCheck()
+
                 rcvMain!!.adapter = adapterRcvMain
                 adapterRcvMain!!.notifyDataSetChanged()
+
+//                if ( realmDTOHttpRcvItemData != null)
+//                    realmDTOHttpRcvItemData!!.delete()
+//
+//                realmDTOHttpRcvItemData!!.delete()
+//                realmDTOHttpRcvItemData!!.save(httpRcvItemData!!.results)
             }
 
             override fun fail(msg: String) {
@@ -116,29 +130,39 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
                 }
     }
 
-    fun clickBtnRetry()
+    fun clickBtnOkRetry(ceDlg: CustomEditDialog)
     {
-        var ced : CustomEditDialog? = null
+        ceDlg!!.closeKeyboard()
 
-        val btnOkListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
-
-            ced!!.closeKeyboard()
-
-            if ( ced!!.isGetNumber())
-            {
-                dataSize = ced!!.getNumber()
-                sendHttp()
-            }
-            else
-                toast("Can not Change Data Size\n please Input Data 1~5000")
-        }
-        val btnCancelListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->   ced!!.closeKeyboard()
+        if ( false == ceDlg!!.isGetNumber()) {
+            toast("Can not Change Data Size\n please Input Data 1~5000")
+            return
         }
 
-        ced = CustomEditDialog(activity, dataSize, btnOkListener, btnCancelListener)
-        ced.showDlg()
+        val size = ceDlg!!.getNumber()
+
+        if ( size < 1 && size > 5000) return
+
+        dataSize = size
+        sendHttp()
+
+    }
+
+    fun clickBtnOkSearch(ceDlg: CustomEditDialog)
+    {
+//        ceDlg!!.closeKeyboard()
+//
+//        val key = ceDlg!!.getNumber()
+//
+//        if ( false == ceDlg!!.isGetNumber() || false == realmDTOHttpRcvItemData!!.isFindValue(key))
+//        {
+//            toast("Can not Search Data \n please Input Data number 0 ~ " + (realmDTOHttpRcvItemData!!.getDataSize() -1))
+//            return
+//        }
+
+//        val result = realmDTOHttpRcvItemData!!.getFindValue(key)
+
+//        Logger.d("result No $key , "+ result.name.getFullName() + " gender " + result.gender)
     }
 
     private fun showProgressDialog(msg:String)

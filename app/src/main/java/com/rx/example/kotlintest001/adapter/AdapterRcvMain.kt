@@ -43,9 +43,9 @@ public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
     override fun onBindViewHolder(holder: ViewHolder?, position: Int)
     {
         holder!!.tvCount.setText("No."+ position )
-        holder!!.tvName.setText( httpRcvItemData!!.results.get( position ).name.getFullName() )
+        holder!!.tvName.setText( httpRcvItemData!!.results.get( position ).name!!.getFullName() )
         holder!!.tvAge.setText( httpRcvItemData!!.results.get( position ).gender)
-        Glide.with(context).load( httpRcvItemData!!.results.get( position ).picture.large).into(holder!!.ivPicture)
+        Glide.with(context).load( httpRcvItemData!!.results.get( position ).picture!!.large).into(holder!!.ivPicture)
     }
 
     open inner class ViewHolder(parent: ViewGroup?)

@@ -24,16 +24,16 @@ public class CustomEditDialog
     private val btnCancel: DialogInterface.OnClickListener
     private val dataSize:Int
 
-    constructor(activity: AppCompatActivity, dataSize:Int,
+    constructor(activity: AppCompatActivity, dataSize:Int, inputType:Int,
                 btnOk: DialogInterface.OnClickListener, btnCancel: DialogInterface.OnClickListener) {
         this.activity = activity
         this.dataSize = dataSize
         this.btnOk = btnOk
         this.btnCancel = btnCancel
-        initData()
+        initData(inputType)
     }
 
-    private fun initData()
+    private fun initData(inputType:Int)
     {
         alertDlg = AlertDialog.Builder(activity)
         alertDlg!!.setTitle("Retry send http data size")
@@ -44,7 +44,7 @@ public class CustomEditDialog
         edtText = EditText(activity)
         edtText!!.setText("" + dataSize)
         edtText!!.requestFocus()
-        edtText!!.inputType = InputType.TYPE_CLASS_NUMBER
+        edtText!!.inputType = inputType
         edtText!!.setSelection(edtText!!.text.toString().length)
 
         alertDlg!!.setView(edtText)
@@ -59,9 +59,7 @@ public class CustomEditDialog
         {
             var number =  edtText!!.text.toString().toInt()
 
-            if ( number > 0 && number <= 5000)
-                return true
-            return false
+            return true
         }
         catch (e:NumberFormatException)
         {
