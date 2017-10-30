@@ -50,7 +50,7 @@ public class HttpRcvMain : HttpBase
             }
 
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-               fail(RESPONE_ON_FAILURE)
+                fail(RESPONE_ON_FAILURE)
             }
         })
     }

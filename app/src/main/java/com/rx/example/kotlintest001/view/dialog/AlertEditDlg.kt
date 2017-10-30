@@ -13,7 +13,7 @@ import com.rx.example.kotlintest001.deburg.Logger
 /**
  * Created by Rhpark on 2017-10-29.
  */
-public class CustomEditDialog
+public class AlertEditDlg
 {
     private val activity: AppCompatActivity
     private var alertDlg:AlertDialog.Builder? = null
@@ -22,29 +22,28 @@ public class CustomEditDialog
 
     private val btnOk: DialogInterface.OnClickListener
     private val btnCancel: DialogInterface.OnClickListener
-    private val dataSize:Int
 
-    constructor(activity: AppCompatActivity, dataSize:Int, inputType:Int,
+
+    constructor(activity: AppCompatActivity, dataSize:Int, intputType:Int, title:String, subMsg:String,
                 btnOk: DialogInterface.OnClickListener, btnCancel: DialogInterface.OnClickListener) {
         this.activity = activity
-        this.dataSize = dataSize
         this.btnOk = btnOk
         this.btnCancel = btnCancel
-        initData(inputType)
+        initData(title, subMsg, dataSize,intputType)
     }
 
-    private fun initData(inputType:Int)
+    private fun initData(title:String, subMsg:String, dataSize:Int, intputType:Int)
     {
         alertDlg = AlertDialog.Builder(activity)
-        alertDlg!!.setTitle("Retry send http data size")
-        alertDlg!!.setMessage("Change the data size 1~5000")
+        alertDlg!!.setTitle(title)
+        alertDlg!!.setMessage(subMsg)
         alertDlg!!.setPositiveButton("OK", btnOk)
         alertDlg!!.setNegativeButton("Cancel", btnCancel)
 
         edtText = EditText(activity)
         edtText!!.setText("" + dataSize)
         edtText!!.requestFocus()
-        edtText!!.inputType = inputType
+        edtText!!.inputType = intputType
         edtText!!.setSelection(edtText!!.text.toString().length)
 
         alertDlg!!.setView(edtText)
@@ -58,7 +57,6 @@ public class CustomEditDialog
         try
         {
             var number =  edtText!!.text.toString().toInt()
-
             return true
         }
         catch (e:NumberFormatException)

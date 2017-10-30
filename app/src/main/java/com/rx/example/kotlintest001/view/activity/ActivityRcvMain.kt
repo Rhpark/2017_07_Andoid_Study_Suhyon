@@ -9,21 +9,16 @@ import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.widget.Button
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.view.dialog.CustomEditDialog
+import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainPresenter
 
 
 class ActivityRcvMain : AppCompatActivity() {
 
     private var rcvMain: RecyclerView? = null
-
     private var btnRetry: Button? = null
     private var btnSearch: Button? = null
-
     private var pd: ProgressDialog? = null
-
-    var ceDlgRetry: CustomEditDialog? = null
-    var ceDlgSearch: CustomEditDialog? = null
 
     private var presenter : ActivityRcvMainPresenter? = null
 
@@ -42,14 +37,14 @@ class ActivityRcvMain : AppCompatActivity() {
 
     private fun findView()
     {
-        rcvMain   = findViewById(R.id.rcvMain)  as RecyclerView
-        btnRetry  = findViewById(R.id.btnRetry) as Button
+        rcvMain  = findViewById(R.id.rcvMain)  as RecyclerView
+        btnRetry = findViewById(R.id.btnRetry) as Button
         btnSearch = findViewById(R.id.btnSearch) as Button
     }
 
     private fun initData()
     {
-        presenter = ActivityRcvMainPresenter(this,rcvMain!!)
+        presenter = ActivityRcvMainPresenter(this, rcvMain!!)
 
         pd = ProgressDialog(this)
         presenter!!.pd = pd
@@ -69,38 +64,52 @@ class ActivityRcvMain : AppCompatActivity() {
         })
 
         btnRetry!!.setOnClickListener { clickBtnRetry() }
+
         btnSearch!!.setOnClickListener { clickBtnSearch() }
     }
 
     private fun clickBtnRetry()
     {
+        var ceDlgRetry : AlertEditDlg? = null
         val btnOkListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
 
-            presenter!!.clickBtnOkRetry(ceDlgRetry!!)
+            dialogInterface, i ->   presenter!!.clickBtnOkRetry(ceDlgRetry!!)
         }
+
         val btnCancelListener= DialogInterface.OnClickListener {
+
             dialogInterface, i ->   ceDlgRetry!!.closeKeyboard()
         }
 
-        ceDlgRetry = CustomEditDialog(this, presenter!!.dataSize,
-                InputType.TYPE_CLASS_NUMBER,btnOkListener, btnCancelListener)
+        ceDlgRetry = AlertEditDlg(this
+                , presenter!!.getDataSize()
+                , InputType.TYPE_CLASS_NUMBER
+                , "Retry send http data size"
+                , "Change the data size 1~5000"
+                , btnOkListener, btnCancelListener)
         ceDlgRetry!!.showDlg()
     }
 
     private fun clickBtnSearch()
     {
+        var ceDlgSearch : AlertEditDlg? = null
         val btnOkListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
 
-            presenter!!.clickBtnOkSearch(ceDlgSearch!!)
+            dialogInterface, i ->
+            presenter!!.clickBtnOkSearch( ceDlgSearch!! )
         }
+
         val btnCancelListener= DialogInterface.OnClickListener {
+
             dialogInterface, i ->   ceDlgSearch!!.closeKeyboard()
         }
 
-        ceDlgSearch = CustomEditDialog(this, presenter!!.dataSize,
-                InputType.TYPE_CLASS_NUMBER,btnOkListener, btnCancelListener)
+        ceDlgSearch = AlertEditDlg(this
+                , (presenter!!.getDataSize()-1)
+                , InputType.TYPE_CLASS_NUMBER
+                , "Search Data Type Number"
+                , "Search the data No. 1 ~ "+ (presenter!!.getDataSize()-1)
+                , btnOkListener, btnCancelListener)
         ceDlgSearch!!.showDlg()
     }
 
@@ -115,5 +124,10 @@ class ActivityRcvMain : AppCompatActivity() {
             return true
 
         return false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter!!.onDestroy()
     }
 }

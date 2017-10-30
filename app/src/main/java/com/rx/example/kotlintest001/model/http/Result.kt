@@ -2,15 +2,12 @@ package com.rx.example.kotlintest001.model.http
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.rx.example.kotlintest001.model.http.*
-
-import java.util.HashMap
+import io.realm.RealmObject
 
 /**
- * Created by INNO_14 on 2017-10-27.
  */
 
-class Result {
+public open class Result :RealmObject {
 
     @SerializedName("gender")
     @Expose
@@ -49,26 +46,11 @@ class Result {
     @Expose
     var nat: String? = null
 
-    /**
-     * No args constructor for use in serialization
-     */
-    public constructor() {}
 
-    /**
-     * @param picture
-     * @param id
-     * @param phone
-     * @param email
-     * @param location
-     * @param registered
-     * @param cell
-     * @param dob
-     * @param name
-     * @param gender
-     * @param nat
-     * @param login
-     */
-    public constructor(gender: String, name: Name, location: Location, email: String, login: Login, dob: String, registered: String, phone: String, cell: String, id: Id, picture: Picture, nat: String) : super() {
+    public constructor() : super()
+    constructor(gender: String?, name: Name?, location: Location?, email: String?, login: Login?,
+                dob: String?, registered: String?, phone: String?, cell: String?, id: Id?,
+                picture: Picture?, nat: String?) : super() {
         this.gender = gender
         this.name = name
         this.location = location
@@ -82,6 +64,4 @@ class Result {
         this.picture = picture
         this.nat = nat
     }
-
-
 }

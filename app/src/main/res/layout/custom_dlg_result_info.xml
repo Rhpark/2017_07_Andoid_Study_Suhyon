@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_custom_dlg_result_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="8dp">
+
+                <TextView
+                    android:id="@+id/tvCount"
+                    style="@style/TextTitle"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Gender"/>
+
+                <TextView
+                    android:id="@+id/tvGender"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Name"/>
+
+                <TextView
+                    android:id="@+id/tvName"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="City"/>
+
+                <TextView
+                    android:id="@+id/tvCity"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Phone"/>
+
+                <TextView
+                    android:id="@+id/tvPhone"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Email"/>
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Dob"/>
+
+                <TextView
+                    android:id="@+id/tvDob"
+                    style="@style/TextSub"/>
+
+                <TextView
+                    style="@style/TextTitle"
+                    android:text="Registered"/>
+
+                <TextView
+                    android:id="@+id/tvRegistered"
+                    style="@style/TextSub"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/ivPicture"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <Button
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="OK"
+            android:id="@+id/btnOk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -7,8 +7,8 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.rx.example.kotlintest001"
-        minSdkVersion 23
-        targetSdkVersion 23
+        minSdkVersion 19
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -20,9 +20,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-    compileOptions{
-        encoding "UTF-8"
     }
 }
 
@@ -40,12 +37,13 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.5.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile('com.squareup.retrofit2:converter-simplexml:2.3.0')
-    {
-        exclude module: 'stax-api'
-    }
+            {
+                exclude module: 'stax-api'
+            }
     compile 'com.github.bumptech.glide:glide:4.0.0'
     compile 'io.reactivex.rxjava2:rxkotlin:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
