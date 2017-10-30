@@ -14,6 +14,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
         val intent = Intent(applicationContext, ActivityRcvMain::class.java)
         applicationContext.startActivity(intent)
         finish()
