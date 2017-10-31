@@ -60,7 +60,6 @@ public class NetworkController
                 .build()
     }
 
-
     fun <T>getHttpService( httpServices : Class< T > ) : T = client.create(httpServices)
 
     fun isNetworkCheck():Boolean
@@ -78,7 +77,6 @@ public class NetworkController
 
         if ( false == mobile.isConnected && false == wifi.isConnected)
             return false
-
         return true
     }
 }
