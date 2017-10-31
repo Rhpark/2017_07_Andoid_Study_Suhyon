@@ -9,126 +9,133 @@ import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
-import com.rx.example.kotlintest001.model.http.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
 import com.rx.example.kotlintest001.model.sharedpf.SharedPfRcvMainDataSize
 import com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
-/**
- */
 
 class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
 
     private val activity: AppCompatActivity
 
-    private var networkController: NetworkController?   = null
-    private var httpJudgeListener: HttpJudgeListener?   = null
-    private var sharedPfRcvMainDataSize : SharedPfRcvMainDataSize? = null
+    private var networkController:  NetworkController by Delegates.notNull()
 
-    var adapterRcvMain: AdapterRcvMain?         = null
-    var httpRcvItemData: HttpRcvItemData?        = null
+    private var sharedPfRcvMainDataSize : SharedPfRcvMainDataSize by Delegates.notNull()
 
-    var pd: ProgressDialog? = null
+    private var realmHttpRcvDTO:    RealmHttpRcvDTO   by Delegates.notNull()
 
-    private var disposable: Disposable? = null
+    private var httpRcvItemData: HttpRcvItemData by Delegates.notNull()
 
-    constructor(activity: AppCompatActivity, rcvMain: RecyclerView)
+    private var pd: ProgressDialog by Delegates.notNull()
+
+    constructor(activity: AppCompatActivity, pd: ProgressDialog)
     {
         Logger.d()
         this.activity = activity
-
-        initData(rcvMain)
+        this.pd = pd
+        initData()
     }
 
-    private fun initData(rcvMain: RecyclerView)
+    private fun initData()
     {
+        realmHttpRcvDTO = RealmHttpRcvDTO()
         sharedPfRcvMainDataSize = SharedPfRcvMainDataSize(activity.applicationContext)
-        sharedPfRcvMainDataSize!!.openDataSize()
+        sharedPfRcvMainDataSize.openDataSize()
+        networkController = NetworkController(activity.applicationContext)
+    }
 
-        networkController = NetworkController()
+    override fun sendHttpSuccess(gsonConvertData: Any, msg: String,rcvMain: RecyclerView,adapterRcvMain: AdapterRcvMain)
+    {
+        toast(msg)
+        httpRcvItemData = gsonConvertData as HttpRcvItemData
 
-        adapterRcvMain = AdapterRcvMain(activity)
+        rcvAdapterUpdate(httpRcvItemData, adapterRcvMain)
+        rcvMain.adapter = adapterRcvMain
 
-        httpJudgeListener = object : HttpJudgeListener {
-            override fun success(gsonConvertData: Any, msg: String) {
-                toast(msg)
-                closeProgressDialog()
-                httpRcvItemData = gsonConvertData as HttpRcvItemData
-                adapterRcvMain!!.httpRcvItemData = httpRcvItemData
-                adapterRcvMain!!.listSizeCheck()
-                rcvMain!!.adapter = adapterRcvMain
-                adapterRcvMain!!.notifyDataSetChanged()
-            }
+        realmHttpRcvDTO.delete()
+        realmHttpRcvDTO.insertAll(httpRcvItemData, activity.applicationContext)
 
-            override fun fail(msg: String) {
-                toast(msg)
-                closeProgressDialog()
-            }
+        closeProgressDialog()
+    }
+
+    override fun sendHttpFail(msg: String,rcvMain: RecyclerView,adapterRcvMain: AdapterRcvMain)
+    {
+        toast(msg)
+
+        if ( realmHttpRcvDTO.isGetData())
+        {
+            httpRcvItemData = realmHttpRcvDTO.getData()
+            rcvAdapterUpdate(httpRcvItemData, adapterRcvMain)
+            rcvMain.adapter = adapterRcvMain
+            toast("Load data from realm")
         }
 
-        disposable = adapterRcvMain!!.clickEvent
-                .subscribe({
-                    CustomDlgResultInfo(activity, adapterRcvMain!!.selectPosition, it).show()
-                })
+        closeProgressDialog()
     }
 
-    fun toast(msg:String) = Toast.makeText(activity,msg, Toast.LENGTH_SHORT).show()
-
-    private fun closeProgressDialog()
+    private fun rcvAdapterUpdate(httpRcvItemData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
     {
-        if ( pd!!.isShowing)    pd!!.dismiss()
+        adapterRcvMain.httpRcvItemData = httpRcvItemData
+        adapterRcvMain.listSizeCheck()
+        adapterRcvMain.notifyDataSetChanged()
     }
 
-    override fun sendHttp()
+    private fun toast(msg:String) = Toast.makeText(activity,msg, Toast.LENGTH_SHORT).show()
+
+    override fun sendHttp(httpJudgeListener: HttpJudgeListener)
     {
-        showProgressDialog("통신 중 입니다.\n Data Size " + sharedPfRcvMainDataSize!!.dataSize)
-        HttpRcvMain(httpJudgeListener, networkController!!, sharedPfRcvMainDataSize!!.dataSize!!)!!.sendHttp()
+        if ( true == networkController.isNetworkCheck())
+        {
+            showProgressDialog("통신 중 입니다.\n Data Size " + getDataSize())
+            HttpRcvMain(httpJudgeListener, networkController, sharedPfRcvMainDataSize.dataSize!!).sendHttp()
+        }
+        else
+            toast("Please check, Network state")
     }
 
-    override fun rcvShowAddValue(rcvMain: RecyclerView)
+    override fun rcvMoveToPosition(rcvMain: RecyclerView, currentPosition:Int)
+    {
+        rcvMain.smoothScrollToPosition(currentPosition )
+        closeProgressDialog()
+    }
+
+    override fun isRcvAddValue(adapterRcvMain: AdapterRcvMain):Boolean
     {
         if ( httpRcvItemData == null)
-            return
+            return false
 
-        val TotalSize = httpRcvItemData!!.results!!.size
-        val lastSize  = adapterRcvMain!!.listSize
+        val TotalSize = httpRcvItemData.results!!.size
+        val lastSize  = adapterRcvMain.listSize
         val defSize   = TotalSize - lastSize
 
-        if ( TotalSize <= lastSize || httpRcvItemData!!.results!!.size <= defSize)
-            return
+        if ( TotalSize <= lastSize || httpRcvItemData.results!!.size <= defSize)
+            return false
 
-        showProgressDialog("추가 정보를 가져옵니다.")
-
-        var maxSize = AdapterRcvMain.MAX_ADD_VALUE
-
-        if (defSize <  maxSize)
-            maxSize = defSize
-
-        adapterRcvMain!!.listSize += maxSize
-
-        adapterRcvMain!!.notifyDataSetChanged()
-
-        rcvShowAddValueMovoToPositon(rcvMain!!, maxSize)
+        return true
     }
 
-    private fun rcvShowAddValueMovoToPositon(rcvMain: RecyclerView, currentPosition:Int) {
-        //        rcvMain.smoothScrollToPosition(adapterRcvMain.listSize - AdapterRcvMain.MAX_ADD_VALUE )
-        //same Thread Sleep Type
-        Observable.timer(500,TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())//결과 스레드 설정
-                .subscribe {
-                    rcvMain.smoothScrollToPosition(adapterRcvMain!!.listSize - currentPosition )
-                    closeProgressDialog()
-                }
+    override fun rcvShowAddValue(rcvMain: RecyclerView, adapterRcvMain: AdapterRcvMain) : Int
+    {
+        showProgressDialog("add Data..")
+
+        val defSize   = httpRcvItemData.results!!.size - adapterRcvMain.listSize
+
+        var moveToPosition = AdapterRcvMain.MAX_ADD_VALUE
+
+        if (defSize <  moveToPosition)
+            moveToPosition = defSize
+
+        adapterRcvMain.listSize += moveToPosition
+
+        adapterRcvMain.notifyDataSetChanged()
+
+        return moveToPosition
     }
 
-    fun clickBtnOkRetry(ceDlgRetry : AlertEditDlg)
+    override fun isCheckRetry(ceDlgRetry : AlertEditDlg):Boolean
     {
         ceDlgRetry.closeKeyboard()
 
@@ -136,19 +143,23 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
         {
             val getValue = ceDlgRetry.getNumber()
             if ( getValue  < 1 || getValue > 5000)
-                toast("Can not Change Data Size\n please Input Number Size 1~5000")
-
-            else
             {
-                sharedPfRcvMainDataSize!!.saveDataSize( ceDlgRetry.getNumber() )
-                sendHttp()
+                toast("Can not Change Data Size\n please Input Number Size 1~5000")
+                return false
             }
+
+            return true
         }
-        else
+        else {
             toast("Can not Change Data Size\n please Input number")
+            return false
+        }
     }
 
-    fun clickBtnOkSearch(ceDlgRetry : AlertEditDlg):Boolean
+    override fun clickBtnOkRetry(ceDlgRetry : AlertEditDlg)
+            = sharedPfRcvMainDataSize.saveDataSize( ceDlgRetry.getNumber() )
+
+    override fun clickSearchDlgBtnOk(ceDlgRetry : AlertEditDlg)
     {
         ceDlgRetry.closeKeyboard()
 
@@ -158,27 +169,33 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
             if ( getValue  < 0 || getValue > (getDataSize()-1))
             {
                 toast("Can not Change Data Size\n please Input Number Size 1 ~ " + (getDataSize()-1))
-                return false
+                return
             }
-            CustomDlgResultInfo(activity,getValue,httpRcvItemData!!.results!!.get(getValue)).show()
-
+            CustomDlgResultInfo(activity, getValue, httpRcvItemData.results!!.get(getValue) ).show()
             toast("find Data!")
-            return true
+            return
         }
-
         toast("Can not Change Data Size\n please Input number")
-        return false
+        return
     }
 
-    fun getDataSize():Int = sharedPfRcvMainDataSize!!.dataSize!!
+    override fun getDataSize():Int = sharedPfRcvMainDataSize.dataSize!!
+
+    private fun closeProgressDialog()
+    {
+        if ( pd.isShowing)    pd.dismiss()
+    }
 
     private fun showProgressDialog(msg:String)
     {
-        if ( pd!!.isShowing )
-            pd!!.dismiss()
-        pd!!.setMessage(msg)
-        pd!!.show()
+        if ( pd.isShowing )
+            pd.dismiss()
+        pd.setMessage(msg)
+        pd.show()
     }
 
-    fun onDestroy() = disposable?.dispose()
+    override fun onDestroy()
+    {
+        realmHttpRcvDTO.onDestroy()
+    }
 }

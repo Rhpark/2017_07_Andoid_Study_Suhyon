@@ -1,6 +1,7 @@
 package com.rx.example.kotlintest001.network
 
 //import android.webkit.CookieManager
+import android.content.Context
 import android.net.ConnectivityManager
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
@@ -11,23 +12,34 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
 import java.net.CookiePolicy
 import java.util.concurrent.TimeUnit
+import android.content.Context.CONNECTIVITY_SERVICE
+import kotlin.properties.Delegates
+
 
 /**
  */
 
 public class NetworkController
 {
-    companion object {
-        val CONNECT_TIMEOUT = 10L
-        val WRITE_TIMEOUT = 10L
-        val READ_TIMEOUT = 10L
+    private val CONNECT_TIMEOUT = 10L
+    private val WRITE_TIMEOUT = 10L
+    private val READ_TIMEOUT = 10L
+
+    private val HTTP_URL = "https://randomuser.me/"//"https://randomuser.me/api/?results=20"
+
+    private var client : Retrofit by Delegates.notNull()
+
+    private var okHttpClient : OkHttpClient by Delegates.notNull()
+
+    private var context :Context
+
+    constructor(context: Context)
+    {
+        this.context = context
+        initData()
     }
 
-    val HTTP_URL = "https://randomuser.me/"//"https://randomuser.me/api/?results=20"
-    var client : Retrofit
-    var okHttpClient : OkHttpClient
-
-    constructor()
+    private fun initData()
     {
         var logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -48,8 +60,13 @@ public class NetworkController
                 .build()
     }
 
-    fun isNetworkCheck(networkCheck:ConnectivityManager? = null):Boolean
+
+    fun <T>getHttpService( httpServices : Class< T > ) : T = client.create(httpServices)
+
+    fun isNetworkCheck():Boolean
     {
+        val networkCheck = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         Logger.d()
         if ( networkCheck == null)
             return false
@@ -57,14 +74,11 @@ public class NetworkController
         val mobile  = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
         val wifi    = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
-        Logger.d("ddd","mobile "+mobile.isConnected +" ,wifi "+ wifi.isConnected)
+        Logger.d("mobile "+mobile.isConnected +" ,wifi "+ wifi.isConnected)
 
         if ( false == mobile.isConnected && false == wifi.isConnected)
             return false
 
         return true
     }
-
-    fun <T>getHttpService( httpServices : Class< T > ) : T = client.create(httpServices)
-
 }

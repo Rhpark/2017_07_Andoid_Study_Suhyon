@@ -1,4 +1,4 @@
-package com.rx.example.kotlintest001.model.http
+package com.rx.example.kotlintest001.model.http.dao
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -14,16 +14,16 @@ public open class Result :RealmObject {
     var gender: String? = null
     @SerializedName("name")
     @Expose
-    var name: Name? = null
+    var name: Name? = Name("","","")
     @SerializedName("location")
     @Expose
-    var location: Location? = null
+    var location: Location? = Location("","","","")
     @SerializedName("email")
     @Expose
     var email: String? = null
     @SerializedName("login")
     @Expose
-    var login: Login? = null
+    var login: Login? = Login("","","","","","")
     @SerializedName("dob")
     @Expose
     var dob: String? = null
@@ -38,16 +38,16 @@ public open class Result :RealmObject {
     var cell: String? = null
     @SerializedName("id")
     @Expose
-    var id: Id? = null
+    var id: Id? = Id("","")
     @SerializedName("picture")
     @Expose
-    var picture: Picture? = null
+    var picture: Picture? = Picture("","","")
     @SerializedName("nat")
     @Expose
     var nat: String? = null
 
-
     public constructor() : super()
+
     constructor(gender: String?, name: Name?, location: Location?, email: String?, login: Login?,
                 dob: String?, registered: String?, phone: String?, cell: String?, id: Id?,
                 picture: Picture?, nat: String?) : super() {

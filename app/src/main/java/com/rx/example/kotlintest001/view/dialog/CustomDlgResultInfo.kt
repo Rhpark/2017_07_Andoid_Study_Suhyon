@@ -11,22 +11,26 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.Result
+import com.rx.example.kotlintest001.model.http.dao.Result
+import kotlin.properties.Delegates
 
 class CustomDlgResultInfo : Dialog {
 
     val selectNumber:Int
     val result: Result
-    var tvCount: TextView? = null
-    var tvName: TextView? = null
-    var tvGender: TextView? = null
-    var tvDob: TextView? = null
-    var tvRegistered: TextView? = null
-    var tvCity: TextView? = null
-    var tvEmail: TextView? = null
-    var tvPhone: TextView? = null
-    var ivPicture: ImageView? = null
-    var btnOk: Button? = null
+
+    var tvCount:        TextView by Delegates.notNull()
+    var tvName:         TextView by Delegates.notNull()
+    var tvGender:       TextView by Delegates.notNull()
+    var tvDob:          TextView by Delegates.notNull()
+    var tvRegistered:   TextView by Delegates.notNull()
+    var tvCity:         TextView by Delegates.notNull()
+    var tvEmail:        TextView by Delegates.notNull()
+    var tvPhone:        TextView by Delegates.notNull()
+
+    var ivPicture:  ImageView by Delegates.notNull()
+
+    var btnOk:  Button by Delegates.notNull()
 
     constructor(context: Context?, selectNumber: Int, result: Result) : super(context)
     {
@@ -67,16 +71,15 @@ class CustomDlgResultInfo : Dialog {
 
     private fun initData()
     {
-        tvCount!!.setText("No. "+selectNumber)
-        tvGender!!.setText(result.gender)
-        tvName!!.setText(result.name!!.fullName())
-        tvCity!!.setText(result.location!!.city)
-        tvEmail!!.setText(result.email)
-        tvPhone!!.setText(result.phone)
-        tvRegistered!!.setText(result.registered)
-        tvDob!!.setText(result.dob)
+        tvCount.setText("No. "+selectNumber)
+        tvGender.setText(result.gender)
+        tvName.setText(result.name!!.fullName())
+        tvCity.setText(result.location!!.city)
+        tvEmail.setText(result.email)
+        tvPhone.setText(result.phone)
+        tvRegistered.setText(result.registered)
+        tvDob.setText(result.dob)
 
         Glide.with(this.context).load(result.picture!!.large).into(ivPicture)
     }
-
 }

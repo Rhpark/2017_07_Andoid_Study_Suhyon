@@ -8,12 +8,11 @@ import com.rx.example.kotlintest001.network.NetworkController
  */
 public abstract class HttpBase {
 
-    companion object {
-        open val RESPONE_FAIL       = "Response Fail"
-        open val RESPONE_SUCCESS    = "Response isSuccessful"
-        open val RESPONE_DATA_ERROR = "Response Data Error"
-        open val RESPONE_ON_FAILURE = "onFailure"
-    }
+    open val RESPONE_FAIL       = "Response Fail"
+    open val RESPONE_SUCCESS    = "Response isSuccessful"
+    open val RESPONE_DATA_ERROR = "Response Data Error"
+    open val RESPONE_ON_FAILURE = "Network onFailure"
+
 
     open var httpJudgeListener : HttpJudgeListener?
     open var http: HttpService?
@@ -28,5 +27,4 @@ public abstract class HttpBase {
     open fun fail(msg:String) = httpJudgeListener!!.fail(msg)
 
     open fun success(hthtpData:Any, msg:String) = httpJudgeListener!!.success(hthtpData,msg)
-
 }

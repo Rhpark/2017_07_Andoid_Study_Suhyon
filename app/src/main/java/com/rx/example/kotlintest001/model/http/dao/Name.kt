@@ -1,4 +1,4 @@
-package com.rx.example.kotlintest001.model.http
+package com.rx.example.kotlintest001.model.http.dao
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

@@ -9,8 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.HttpRcvItemData
-import com.rx.example.kotlintest001.model.http.Result
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.Result
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
@@ -22,14 +22,13 @@ public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
         val MAX_ADD_VALUE = 20  //한번에 추가로 보여줄수 있는 갯수 20
     }
     private val context : Context
-
-    var listSize = 0
-
-    var httpRcvItemData : HttpRcvItemData? = null   //total data
-
     private val clickSubject = PublishSubject.create<Result>()
+
     val clickEvent: Observable<Result> = clickSubject
+    var listSize = 0
     var selectPosition = 0
+
+    var httpRcvItemData : HttpRcvItemData? = null   //get total data
 
     constructor(context: Context ) : super() {
         this.context = context

@@ -9,20 +9,36 @@ import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.widget.Button
 import com.rx.example.kotlintest001.R
+import com.rx.example.kotlintest001.adapter.AdapterRcvMain
+import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
+import com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainPresenter
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
 
 class ActivityRcvMain : AppCompatActivity() {
 
-    private var rcvMain: RecyclerView? = null
-    private var btnRetry: Button? = null
-    private var btnSearch: Button? = null
-    private var pd: ProgressDialog? = null
+    private var rcvMain: RecyclerView by Delegates.notNull()
+    private var btnRetry: Button by Delegates.notNull()
+    private var btnSearch: Button by Delegates.notNull()
+    private var pd: ProgressDialog by Delegates.notNull()
 
-    private var presenter : ActivityRcvMainPresenter? = null
+    private var presenter : ActivityRcvMainPresenter by Delegates.notNull()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private var httpJudgeListener: HttpJudgeListener by Delegates.notNull()
+
+    private var adapterRcvMain: AdapterRcvMain by Delegates.notNull()
+
+    private var disposable: Disposable by Delegates.notNull()   //recyclerview ItemSelect
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_rcv)
 
@@ -32,7 +48,7 @@ class ActivityRcvMain : AppCompatActivity() {
 
         initListener()
 
-        presenter!!.sendHttp()
+        presenter.sendHttp(httpJudgeListener)
     }
 
     private fun findView()
@@ -44,36 +60,69 @@ class ActivityRcvMain : AppCompatActivity() {
 
     private fun initData()
     {
-        presenter = ActivityRcvMainPresenter(this, rcvMain!!)
-
+        adapterRcvMain = AdapterRcvMain(this)
         pd = ProgressDialog(this)
-        presenter!!.pd = pd
+        presenter = ActivityRcvMainPresenter(this, pd)
     }
 
     private fun initListener()
     {
-        rcvMain!!.addOnScrollListener( object : RecyclerView.OnScrollListener()
+        btnRetry.setOnClickListener { clickBtnRetry() }
+
+        btnSearch.setOnClickListener { clickBtnSearch() }
+
+        //RecyclerView Item Click Event
+        disposable = adapterRcvMain.clickEvent
+                .subscribe({
+                    CustomDlgResultInfo(this, adapterRcvMain.selectPosition, it).show()
+                })
+
+        rcvMain.addOnScrollListener( object : RecyclerView.OnScrollListener()
         {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if ( isCheckRcvScrollBottom()) {
-                    presenter!!.rcvShowAddValue(rcvMain!!)
-                }
+                if ( isCheckRcvScrollBottom() && presenter.isRcvAddValue(adapterRcvMain))
+                    rcvMovoToPositon(presenter.rcvShowAddValue(rcvMain, adapterRcvMain))
             }
         })
 
-        btnRetry!!.setOnClickListener { clickBtnRetry() }
+        httpJudgeListener = object : HttpJudgeListener
+        {
+            override fun success(gsonConvertData: Any, msg: String)
+            {
+                presenter.sendHttpSuccess(gsonConvertData,msg,rcvMain,adapterRcvMain)
+            }
 
-        btnSearch!!.setOnClickListener { clickBtnSearch() }
+            override fun fail(msg: String)
+            {
+                presenter.sendHttpFail(msg, rcvMain, adapterRcvMain)
+            }
+        }
+    }
+
+    private fun rcvMovoToPositon(currentPosition:Int) {
+        //        rcvMain.smoothScrollToPosition(adapterRcvMain.listSize - AdapterRcvMain.MAX_ADD_VALUE )
+        //same Thread Sleep Type
+        Observable.timer(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())//결과 스레드 설정
+                .subscribe {
+                    presenter.rcvMoveToPosition(rcvMain, (adapterRcvMain.listSize - currentPosition))
+
+                }
     }
 
     private fun clickBtnRetry()
     {
         var ceDlgRetry : AlertEditDlg? = null
         val btnOkListener= DialogInterface.OnClickListener {
-
-            dialogInterface, i ->   presenter!!.clickBtnOkRetry(ceDlgRetry!!)
+            dialogInterface, i ->
+            if ( presenter.isCheckRetry(ceDlgRetry!!) )
+            {
+                presenter.clickBtnOkRetry(ceDlgRetry!!)
+                presenter.sendHttp(httpJudgeListener)
+            }
         }
 
         val btnCancelListener= DialogInterface.OnClickListener {
@@ -82,7 +131,7 @@ class ActivityRcvMain : AppCompatActivity() {
         }
 
         ceDlgRetry = AlertEditDlg(this
-                , presenter!!.getDataSize()
+                , presenter.getDataSize()
                 , InputType.TYPE_CLASS_NUMBER
                 , "Retry send http data size"
                 , "Change the data size 1~5000"
@@ -93,10 +142,11 @@ class ActivityRcvMain : AppCompatActivity() {
     private fun clickBtnSearch()
     {
         var ceDlgSearch : AlertEditDlg? = null
+
         val btnOkListener= DialogInterface.OnClickListener {
 
             dialogInterface, i ->
-            presenter!!.clickBtnOkSearch( ceDlgSearch!! )
+            presenter.clickSearchDlgBtnOk(ceDlgSearch!!)
         }
 
         val btnCancelListener= DialogInterface.OnClickListener {
@@ -105,20 +155,19 @@ class ActivityRcvMain : AppCompatActivity() {
         }
 
         ceDlgSearch = AlertEditDlg(this
-                , (presenter!!.getDataSize()-1)
+                , (presenter.getDataSize()-1)
                 , InputType.TYPE_CLASS_NUMBER
                 , "Search Data Type Number"
-                , "Search the data No. 1 ~ "+ (presenter!!.getDataSize()-1)
+                , "Search the data No. 1 ~ "+ (presenter.getDataSize()-1)
                 , btnOkListener, btnCancelListener)
         ceDlgSearch!!.showDlg()
     }
 
-
     private fun isCheckRcvScrollBottom(): Boolean
     {
-        val lastVisibleItemPosition = (rcvMain!!.getLayoutManager() as LinearLayoutManager)
+        val lastVisibleItemPosition = (rcvMain.getLayoutManager() as LinearLayoutManager)
                 .findLastCompletelyVisibleItemPosition()
-        val itemTotalCount = rcvMain!!.getAdapter().itemCount - 1
+        val itemTotalCount = rcvMain.getAdapter().itemCount - 1
 
         if ( lastVisibleItemPosition == itemTotalCount )
             return true
@@ -126,8 +175,10 @@ class ActivityRcvMain : AppCompatActivity() {
         return false
     }
 
-    override fun onDestroy() {
+    override fun onDestroy()
+    {
         super.onDestroy()
-        presenter!!.onDestroy()
+        disposable.dispose()
+        presenter.onDestroy()
     }
 }

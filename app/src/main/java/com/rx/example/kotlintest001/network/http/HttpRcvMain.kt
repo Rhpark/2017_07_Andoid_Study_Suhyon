@@ -3,7 +3,7 @@ package com.rx.example.kotlintest001.network.http
 import com.google.gson.Gson
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
-import com.rx.example.kotlintest001.model.http.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,15 +14,13 @@ import retrofit2.Response
  */
 public class HttpRcvMain : HttpBase
 {
-    var httpRcvItemData : HttpRcvItemData? = null
-    var dataSize = 0
+    private var httpRcvItemData : HttpRcvItemData? = null
+    private var dataSize = 0
     constructor(httpJudgeListener: HttpJudgeListener?, netwrokController: NetworkController, dataSize:Int)
             : super(httpJudgeListener, netwrokController)
     {
         this.dataSize = dataSize
     }
-
-
 
     override fun sendHttp() {
 
