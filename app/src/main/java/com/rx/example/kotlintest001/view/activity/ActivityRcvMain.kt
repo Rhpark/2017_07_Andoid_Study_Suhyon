@@ -24,16 +24,15 @@ import kotlin.properties.Delegates
 
 class ActivityRcvMain : AppCompatActivity() {
 
-    private var rcvMain: RecyclerView by Delegates.notNull()
-    private var btnRetry: Button by Delegates.notNull()
-    private var btnSearch: Button by Delegates.notNull()
-    private var pd: ProgressDialog by Delegates.notNull()
+
+    private val rcvMain         by lazy{    findViewById(R.id.rcvMain)  as RecyclerView }
+    private val btnRetry        by lazy{    findViewById(R.id.btnRetry) as Button }
+    private val btnSearch       by lazy{    findViewById(R.id.btnSearch) as Button }
+    private val pd              by lazy{    ProgressDialog(this) }
+    private val adapterRcvMain  by lazy{    AdapterRcvMain(this) }
 
     private var presenter : ActivityRcvMainPresenter by Delegates.notNull()
-
     private var httpJudgeListener: HttpJudgeListener by Delegates.notNull()
-
-    private var adapterRcvMain: AdapterRcvMain by Delegates.notNull()
 
     private var disposable: Disposable by Delegates.notNull()   //recyclerview ItemSelect
 
@@ -42,27 +41,11 @@ class ActivityRcvMain : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_rcv)
 
-        findView()
-
-        initData()
+        presenter = ActivityRcvMainPresenter(this, pd)
 
         initListener()
 
         presenter.sendHttp(httpJudgeListener)
-    }
-
-    private fun findView()
-    {
-        rcvMain  = findViewById(R.id.rcvMain)  as RecyclerView
-        btnRetry = findViewById(R.id.btnRetry) as Button
-        btnSearch = findViewById(R.id.btnSearch) as Button
-    }
-
-    private fun initData()
-    {
-        adapterRcvMain = AdapterRcvMain(this)
-        pd = ProgressDialog(this)
-        presenter = ActivityRcvMainPresenter(this, pd)
     }
 
     private fun initListener()

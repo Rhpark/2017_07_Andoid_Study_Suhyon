@@ -19,32 +19,24 @@ import kotlin.properties.Delegates
 
 class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
 
-    private val activity: AppCompatActivity
-
-    private var networkController:  NetworkController by Delegates.notNull()
-
-    private var sharedPfRcvMainDataSize : SharedPfRcvMainDataSize by Delegates.notNull()
-
-    private var realmHttpRcvDTO:    RealmHttpRcvDTO   by Delegates.notNull()
+    private var activity: AppCompatActivity? = null
 
     private var httpRcvItemData: HttpRcvItemData by Delegates.notNull()
 
     private var pd: ProgressDialog by Delegates.notNull()
+
+    private val realmHttpRcvDTO             by lazy{    RealmHttpRcvDTO() }
+
+    //??!ACTIVITY.?
+    private val sharedPfRcvMainDataSize     by lazy{    SharedPfRcvMainDataSize(activity!!.applicationContext) }
+    private val networkController           by lazy{    NetworkController(activity!!.applicationContext) }
 
     constructor(activity: AppCompatActivity, pd: ProgressDialog)
     {
         Logger.d()
         this.activity = activity
         this.pd = pd
-        initData()
-    }
-
-    private fun initData()
-    {
-        realmHttpRcvDTO = RealmHttpRcvDTO()
-        sharedPfRcvMainDataSize = SharedPfRcvMainDataSize(activity.applicationContext)
         sharedPfRcvMainDataSize.openDataSize()
-        networkController = NetworkController(activity.applicationContext)
     }
 
     override fun sendHttpSuccess(gsonConvertData: Any, msg: String,rcvMain: RecyclerView,adapterRcvMain: AdapterRcvMain)
@@ -56,7 +48,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainPresenterImp {
         rcvMain.adapter = adapterRcvMain
 
         realmHttpRcvDTO.delete()
-        realmHttpRcvDTO.insertAll(httpRcvItemData, activity.applicationContext)
+        realmHttpRcvDTO.insertAll(httpRcvItemData, activity!!.applicationContext)
 
         closeProgressDialog()
     }

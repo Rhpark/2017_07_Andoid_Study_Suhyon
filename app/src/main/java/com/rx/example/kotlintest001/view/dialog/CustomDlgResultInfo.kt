@@ -12,6 +12,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
 import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
 import kotlin.properties.Delegates
 
 class CustomDlgResultInfo : Dialog {
@@ -19,18 +20,16 @@ class CustomDlgResultInfo : Dialog {
     val selectNumber:Int
     val result: Result
 
-    var tvCount:        TextView by Delegates.notNull()
-    var tvName:         TextView by Delegates.notNull()
-    var tvGender:       TextView by Delegates.notNull()
-    var tvDob:          TextView by Delegates.notNull()
-    var tvRegistered:   TextView by Delegates.notNull()
-    var tvCity:         TextView by Delegates.notNull()
-    var tvEmail:        TextView by Delegates.notNull()
-    var tvPhone:        TextView by Delegates.notNull()
-
-    var ivPicture:  ImageView by Delegates.notNull()
-
-    var btnOk:  Button by Delegates.notNull()
+    private val tvCount        by lazy{    findViewById(R.id.tvCount) as TextView }
+    private val tvName         by lazy{    findViewById(R.id.tvName) as TextView }
+    private val tvGender       by lazy{    findViewById(R.id.tvGender) as TextView }
+    private val tvDob          by lazy{    findViewById(R.id.tvDob) as TextView }
+    private val tvRegistered   by lazy{    findViewById(R.id.tvCity) as TextView }
+    private val tvCity         by lazy{    findViewById(R.id.tvEmail) as TextView }
+    private val tvEmail        by lazy{    findViewById(R.id.tvPhone) as TextView }
+    private val tvPhone        by lazy{    findViewById(R.id.tvRegistered) as TextView }
+    private val ivPicture      by lazy{    findViewById(R.id.ivPicture) as ImageView }
+    private val btnOk          by lazy{    findViewById(R.id.btnOk) as Button }
 
     constructor(context: Context?, selectNumber: Int, result: Result) : super(context)
     {
@@ -47,26 +46,9 @@ class CustomDlgResultInfo : Dialog {
 
         setContentView(R.layout.custom_dlg_result_info)
 
-        findview()
         initData()
 
-        btnOk!!.setOnClickListener { this.dismiss() }
-    }
-
-    private fun findview()
-    {
-        tvCount     = findViewById(R.id.tvCount) as TextView
-        tvName      = findViewById(R.id.tvName) as TextView
-        tvGender    = findViewById(R.id.tvGender) as TextView
-        tvDob       = findViewById(R.id.tvDob) as TextView
-        tvCity      = findViewById(R.id.tvCity) as TextView
-        tvEmail     = findViewById(R.id.tvEmail) as TextView
-        tvPhone     = findViewById(R.id.tvPhone) as TextView
-        tvRegistered = findViewById(R.id.tvRegistered) as TextView
-
-        ivPicture = findViewById(R.id.ivPicture) as ImageView
-
-        btnOk = findViewById(R.id.btnOk) as Button
+        btnOk.setOnClickListener { this.dismiss() }
     }
 
     private fun initData()
@@ -80,6 +62,6 @@ class CustomDlgResultInfo : Dialog {
         tvRegistered.setText(result.registered)
         tvDob.setText(result.dob)
 
-        Glide.with(this.context).load(result.picture!!.large).into(ivPicture)
+        Glide.with(this.context).load(result.picture?.large).into(ivPicture)
     }
 }

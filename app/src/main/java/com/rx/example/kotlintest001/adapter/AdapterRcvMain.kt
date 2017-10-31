@@ -1,5 +1,6 @@
 package com.rx.example.kotlintest001.adapter
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -64,16 +65,12 @@ public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
     open inner class ViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView)
     {
-        var ivPicture   : ImageView
-        var tvName      : TextView
-        var tvGender    : TextView
-        var tvCount     : TextView
+        private val ivPicture   by lazy{    itemView.findViewById(R.id.ivPicture) as ImageView }
+        private val tvName      by lazy{    itemView.findViewById(R.id.tvName) as TextView }
+        private val tvGender    by lazy{    itemView.findViewById(R.id.tvGender) as TextView }
+        private val tvCount     by lazy{    itemView.findViewById(R.id.tvCount) as TextView }
 
         init {
-            ivPicture = itemView.findViewById(R.id.ivPicture) as ImageView
-            tvName = itemView.findViewById(R.id.tvName) as TextView
-            tvGender = itemView.findViewById(R.id.tvGender) as TextView
-            tvCount = itemView.findViewById(R.id.tvCount) as TextView
 
             itemView.setOnClickListener {
                 selectPosition = layoutPosition
