@@ -24,11 +24,13 @@ class CustomDlgResultInfo : Dialog {
     private val tvName         by lazy{    findViewById(R.id.tvName) as TextView }
     private val tvGender       by lazy{    findViewById(R.id.tvGender) as TextView }
     private val tvDob          by lazy{    findViewById(R.id.tvDob) as TextView }
-    private val tvRegistered   by lazy{    findViewById(R.id.tvCity) as TextView }
-    private val tvCity         by lazy{    findViewById(R.id.tvEmail) as TextView }
-    private val tvEmail        by lazy{    findViewById(R.id.tvPhone) as TextView }
-    private val tvPhone        by lazy{    findViewById(R.id.tvRegistered) as TextView }
+    private val tvRegistered   by lazy{    findViewById(R.id.tvRegistered) as TextView }
+    private val tvCity         by lazy{    findViewById(R.id.tvCity) as TextView }
+    private val tvEmail        by lazy{    findViewById(R.id.tvEmail) as TextView }
+    private val tvPhone        by lazy{    findViewById(R.id.tvPhone) as TextView }
+
     private val ivPicture      by lazy{    findViewById(R.id.ivPicture) as ImageView }
+
     private val btnOk          by lazy{    findViewById(R.id.btnOk) as Button }
 
     constructor(context: Context?, selectNumber: Int, result: Result) : super(context)

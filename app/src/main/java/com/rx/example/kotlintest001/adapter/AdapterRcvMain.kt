@@ -1,43 +1,35 @@
 package com.rx.example.kotlintest001.adapter
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlin.properties.Delegates
 
 /**
  */
-public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
+public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
 
-    companion object {
-        val MAX_ADD_VALUE = 20  //한번에 추가로 보여줄수 있는 갯수 20
-    }
-    private val context : Context
-    private val clickSubject = PublishSubject.create<Result>()
+    /*한번에 추가로 보여줄수 있는 갯수 20*/
+    companion object {  val MAX_ADD_VALUE = 20  }
 
-    val clickEvent: Observable<Result> = clickSubject
     var listSize = 0
-    var selectPosition = 0
 
-    var httpRcvItemData : HttpRcvItemData? = null   //get total data
+    var clickEvent = PublishSubject.create<Int>()
+    lateinit var results:MutableList<Result>   //get total data
 
-    constructor(context: Context ) : super() {
-        this.context = context
-    }
+    constructor() : super()
 
-    fun listSizeCheck()
+    fun getItem(position:Int):Result = results.get(position)
+
+    fun addItemListSize()
     {
-        val Totalsize = httpRcvItemData!!.results!!.size
+        val Totalsize = results.size
         if ( Totalsize > MAX_ADD_VALUE )
             listSize = MAX_ADD_VALUE
         else
@@ -46,44 +38,19 @@ public class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMain.ViewHolder> {
 
     override fun getItemCount() = listSize
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int):ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AdapterRcvMainViewHolder {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_rcv, parent, false)
-        return ViewHolder(view)
-//        AdapterRcvMain.ViewHolder = ViewHolder(parent)
+
+        val viewholder = AdapterRcvMainViewHolder(view, clickEvent)
+//        clickEvent = viewholder.clickSubject
+        return viewholder
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int)
+    override fun onBindViewHolder(holder: AdapterRcvMainViewHolder?, position: Int)
     {
-        holder!!.bind(position
-                ,httpRcvItemData!!.results!!.get(position).name!!.fullName()
-                ,httpRcvItemData!!.results!!.get(position).gender!!
-                ,httpRcvItemData!!.results!!.get(position).picture!!.large!!)
-    }
-
-    //    open inner class ViewHolder(parent: ViewGroup?)
-//        : RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_main_rcv,parent,false))
-    open inner class ViewHolder(itemView: View)
-        : RecyclerView.ViewHolder(itemView)
-    {
-        private val ivPicture   by lazy{    itemView.findViewById(R.id.ivPicture) as ImageView }
-        private val tvName      by lazy{    itemView.findViewById(R.id.tvName) as TextView }
-        private val tvGender    by lazy{    itemView.findViewById(R.id.tvGender) as TextView }
-        private val tvCount     by lazy{    itemView.findViewById(R.id.tvCount) as TextView }
-
-        init {
-
-            itemView.setOnClickListener {
-                selectPosition = layoutPosition
-                clickSubject.onNext(httpRcvItemData!!.results!!.get(layoutPosition))
-            }
-        }
-
-        fun bind(count:Int,name:String,gender:String, imgUrl:String)
-        {
-            tvCount.setText("No."+ count )
-            tvName.setText( name )
-            tvGender.setText( gender)
-            Glide.with(context).load( imgUrl).into(ivPicture)
-        }
+        holder?.bind(position
+                ,results.get(position)?.name!!.fullName()
+                ,results.get(position)?.gender!!
+                ,results.get(position)?.picture?.large!!)
     }
 }

@@ -15,6 +15,8 @@ import kotlin.properties.Delegates
  */
 public class RealmHttpRcvDTO
 {
+    var httpRcvItemData: HttpRcvItemData? = null
+
     private var realm : Realm by Delegates.notNull()
 //    private var realmConfig : RealmConfiguration by Delegates.notNull()
 
@@ -35,11 +37,12 @@ public class RealmHttpRcvDTO
     fun insertAll(httpRcvItemData: HttpRcvItemData, context: Context)
     {
         realm.executeTransactionAsync(
-                {
-                    insertDataResult(it, httpRcvItemData.results!!, httpRcvItemData.info!!)
+                {   //execute
+                    insertDataResult(it, httpRcvItemData)
                 }
                 ,
                 {
+                    this.httpRcvItemData = httpRcvItemData
                     Toast.makeText(context,"data is Saved",Toast.LENGTH_SHORT).show()
                     Logger.d("Realm Save Success")
                 }
@@ -50,27 +53,38 @@ public class RealmHttpRcvDTO
                 })
     }
 
-    fun insertDataResult(realm:Realm, results:MutableList<Result>, info:Info)
+    private fun insertDataResult(realm:Realm, httpRcvItemData: HttpRcvItemData)
     {
         Logger.d("Realm Save execute")
-        realm.copyToRealm(info)
-        realm.copyToRealmOrUpdate(results)
+        realm.copyToRealm(httpRcvItemData.info)
+        realm.copyToRealmOrUpdate(httpRcvItemData.results)
     }
 
-    fun getData() : HttpRcvItemData
+    fun loadData() : HttpRcvItemData
     {
         var rResults = realm.where(Result::class.java).findAll()
         var rInfo = realm.where(Info::class.java).findFirst()
         Logger.d("Result size " + rResults.size + " rInfo version " + rInfo.version)
 
+        if ( httpRcvItemData == null )
+            httpRcvItemData = HttpRcvItemData(rResults,rInfo)
+        else
+        {
+            httpRcvItemData!!.results = rResults
+            httpRcvItemData!!.info = rInfo
+        }
+
         return HttpRcvItemData(rResults , rInfo)
     }
+
+    fun getData() : HttpRcvItemData = httpRcvItemData!!
 
     fun delete() {
         realm.executeTransaction {
 
             realm.delete(Result::class.java)
             realm.delete(Info::class.java)
+            httpRcvItemData = null
         }
     }
 
