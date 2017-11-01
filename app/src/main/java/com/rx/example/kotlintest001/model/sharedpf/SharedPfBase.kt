@@ -6,13 +6,14 @@ import android.content.SharedPreferences
 /**
  * Created by Rhpark on 2017-10-29.
  */
-public open class SharedPfBase {
+public open abstract class SharedPfBase {
 
-    val context:Context
-    var sp:SharedPreferences? = null
-    var editor:SharedPreferences.Editor? = null
+    protected val context:Context
+    protected open var sp:SharedPreferences? = null
+    protected open var editor:SharedPreferences.Editor? = null
 
-    constructor(context: Context) {
+    constructor(context: Context)
+    {
         this.context = context
     }
 

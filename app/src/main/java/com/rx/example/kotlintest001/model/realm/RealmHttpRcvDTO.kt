@@ -13,24 +13,14 @@ import kotlin.properties.Delegates
 /**
  * Created by Rhpark on 2017-10-30.
  */
-public class RealmHttpRcvDTO
+ class RealmHttpRcvDTO
 {
     var httpRcvItemData: HttpRcvItemData? = null
 
     private var realm : Realm by Delegates.notNull()
-//    private var realmConfig : RealmConfiguration by Delegates.notNull()
 
-    public constructor() : super()
+    constructor() : super()
     {
-        initData()
-    }
-
-    fun initData()
-    {
-//        realmConfig = RealmConfiguration.Builder().build()
-//        Realm.deleteRealm(realmConfig)
-//        realm = Realm.getInstance(realmConfig)
-
         realm = Realm.getDefaultInstance()
     }
 
@@ -62,16 +52,16 @@ public class RealmHttpRcvDTO
 
     fun loadData() : HttpRcvItemData
     {
-        var rResults = realm.where(Result::class.java).findAll()
         var rInfo = realm.where(Info::class.java).findFirst()
+        var rResults = realm.where(Result::class.java).findAll()
         Logger.d("Result size " + rResults.size + " rInfo version " + rInfo.version)
 
         if ( httpRcvItemData == null )
             httpRcvItemData = HttpRcvItemData(rResults,rInfo)
         else
         {
-            httpRcvItemData!!.results = rResults
             httpRcvItemData!!.info = rInfo
+            httpRcvItemData!!.results = rResults
         }
 
         return HttpRcvItemData(rResults , rInfo)
@@ -92,7 +82,8 @@ public class RealmHttpRcvDTO
     {
         val resSize = realm.where(Result::class.java).findAll().size
         Logger.d("resSize " + resSize)
-        if ( resSize > 0 ) return true
+        if ( resSize > 0 )
+            return true
         return false
     }
 

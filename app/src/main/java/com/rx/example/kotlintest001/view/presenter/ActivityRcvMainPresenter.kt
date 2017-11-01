@@ -1,5 +1,6 @@
 package com.rx.example.kotlintest001.view.presenter
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.ModelRcvMain
@@ -18,11 +19,11 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     private var modelRcvMain:ModelRcvMain
 
-    constructor(view: ActivityRcvMainContract.View)
+    constructor(view: ActivityRcvMainContract.View,context:Context)
     {
         this.view = view
-        modelRcvMain = ModelRcvMain(view.getContext())
-        networkController = NetworkController(view.getContext().applicationContext)
+        modelRcvMain = ModelRcvMain(context)
+        networkController = NetworkController(context)
     }
 
     override fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, msg: String,adapterRcvMain: AdapterRcvMain)

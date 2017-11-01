@@ -8,6 +8,6 @@ import retrofit2.Response
  */
 public interface HttpJudgeListener {
 
-    public fun success(gsonConvertData: Any, msg:String)
     public fun fail(msg:String)
+    public fun success(gsonConvertData: Any, msg:String)
 }

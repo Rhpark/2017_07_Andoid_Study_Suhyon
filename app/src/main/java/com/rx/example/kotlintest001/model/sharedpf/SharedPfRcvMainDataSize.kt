@@ -29,5 +29,4 @@ public class SharedPfRcvMainDataSize : SharedPfBase
     }
 
     public fun deleteData() = saveInt(KEY_DATA_SIZE,DEFAULT_VALUE)
-
 }

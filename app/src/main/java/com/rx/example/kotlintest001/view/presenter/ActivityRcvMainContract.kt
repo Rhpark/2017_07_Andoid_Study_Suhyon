@@ -14,8 +14,6 @@ public interface ActivityRcvMainContract {
 
     interface View
     {
-        fun getContext():Context
-
         fun toastShow(msg:String)
 
         fun showProgressDialog(msg:String)

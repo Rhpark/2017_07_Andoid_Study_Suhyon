@@ -21,17 +21,17 @@ import kotlin.properties.Delegates
 
 public class NetworkController
 {
-    private val CONNECT_TIMEOUT = 10L
-    private val WRITE_TIMEOUT = 10L
     private val READ_TIMEOUT = 10L
+    private val WRITE_TIMEOUT = 10L
+    private val CONNECT_TIMEOUT = 10L
 
     private val HTTP_URL = "https://randomuser.me/"//"https://randomuser.me/api/?results=20"
 
-    private var client : Retrofit by Delegates.notNull()
-
-    private var okHttpClient : OkHttpClient by Delegates.notNull()
-
     private var context :Context
+
+    lateinit private var client : Retrofit
+
+    lateinit private var okHttpClient : OkHttpClient
 
     constructor(context: Context)
     {
@@ -70,8 +70,8 @@ public class NetworkController
         if ( networkCheck == null)
             return false
 
-        val mobile  = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
         val wifi    = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        val mobile  = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
 
         Logger.d("mobile "+mobile.isConnected +" ,wifi "+ wifi.isConnected)
 

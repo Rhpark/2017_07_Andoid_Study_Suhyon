@@ -32,7 +32,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     private val rcvMain     by lazy{    findViewById(R.id.rcvMain)  as RecyclerView }
     private val btnRetry    by lazy{    findViewById(R.id.btnRetry) as Button }
     private val btnSearch   by lazy{    findViewById(R.id.btnSearch) as Button }
-    private val pd          by lazy{    ProgressDialog(this) }
+
+    private lateinit var pd : ProgressDialog
 
     private lateinit var adapterRcvMain: AdapterRcvMain
     private lateinit var presenter: ActivityRcvMainPresenter
@@ -47,7 +48,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         setContentView(R.layout.activity_main_rcv)
 
         adapterRcvMain = AdapterRcvMain()
-        presenter = ActivityRcvMainPresenter(this@ActivityRcvMain)
+        pd = ProgressDialog(this).apply { setCanceledOnTouchOutside(false) }
+        presenter = ActivityRcvMainPresenter(this@ActivityRcvMain, applicationContext)
 
         initListener()
 
@@ -61,7 +63,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
         btnSearch.setOnClickListener { clickBtnSearch() }
 
-        /*disposable =*/ adapterRcvMain.clickEvent
+        /*disposable =*/ adapterRcvMain.psRcvItemSelected
                 .subscribe {
                     Logger.d()
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
@@ -164,8 +166,6 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     }
 
     override fun toastShow(msg: String) = Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
-
-    override fun getContext(): Context = this.applicationContext
 
     override fun onDestroy()
     {

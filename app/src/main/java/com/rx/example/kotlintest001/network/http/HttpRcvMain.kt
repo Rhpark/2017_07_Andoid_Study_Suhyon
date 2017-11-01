@@ -16,7 +16,7 @@ public class HttpRcvMain : HttpBase
 {
     private var httpRcvItemData : HttpRcvItemData? = null
     private var dataSize = 0
-    constructor(httpJudgeListener: HttpJudgeListener?, netwrokController: NetworkController, dataSize:Int)
+    constructor(httpJudgeListener: HttpJudgeListener, netwrokController: NetworkController, dataSize:Int)
             : super(httpJudgeListener, netwrokController)
     {
         this.dataSize = dataSize
@@ -26,8 +26,8 @@ public class HttpRcvMain : HttpBase
 
         //RxJava2 Single.
         http!!.getDatList(dataSize).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?)
+            {
                 if ( false == response!!.isSuccessful )
                 {
                     fail(RESPONE_FAIL)
@@ -47,7 +47,8 @@ public class HttpRcvMain : HttpBase
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?)
+            {
                 fail(RESPONE_ON_FAILURE)
             }
         })
