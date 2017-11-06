@@ -15,51 +15,42 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
     private val context: Context
 
     private val realmHttpRcvDTO by lazy{    RealmHttpRcvDTO() }
-    private var sharedPfRcvMainDataSize: SharedPfRcvMainDataSize
 
     constructor(context: Context)
     {
         this.context = context
-        sharedPfRcvMainDataSize = SharedPfRcvMainDataSize(context)
-        sharedPfRcvMainDataSize.openDataSize()
     }
 
     override fun saveDataSendHttpSuccess(httpRcvItemData: HttpRcvItemData)
     {
-        saveHttpData(httpRcvItemData)
         deleteAllData()
-        realmHttpRcvDTO.insertAll(httpRcvItemData, context)
-        saveHttpDataSize(httpRcvItemData.results!!.size)
+        saveHttpData(httpRcvItemData)
+//        realmHttpRcvDTO.insertAll(httpRcvItemData, context)
     }
 
     override fun saveDataSendHttpFail()
     {
         loadAllData()
-        saveHttpDataSize(realmHttpRcvDTO.httpRcvItemData!!.results!!.size)
     }
 
-    override fun saveHttpDataSize(dataSize: Int) = sharedPfRcvMainDataSize.saveDataSize( dataSize)
-
-    override fun getDataSize(): Int = sharedPfRcvMainDataSize.openDataSize()
+    override fun getDataSize(): Int = realmHttpRcvDTO.httpRcvItemData!!.results!!.size
 
     override fun isGetResultData(): Boolean = realmHttpRcvDTO.isGetData()
 
-    override fun getHttpData(): HttpRcvItemData = realmHttpRcvDTO.getData()
+    override fun getHttpData(): HttpRcvItemData = realmHttpRcvDTO.httpRcvItemData!!
 
-    override fun getHttpResults(): MutableList<Result> = realmHttpRcvDTO.getData().results!!
+    override fun getHttpResults(): MutableList<Result> = realmHttpRcvDTO.httpRcvItemData!!.results!!
 
     private fun saveHttpData(httpRcvItemData: HttpRcvItemData) = realmHttpRcvDTO.insertAll(httpRcvItemData, context)
 
-    private fun loadAllData()
+    fun loadAllData()
     {
         realmHttpRcvDTO.loadData()
-        sharedPfRcvMainDataSize.openDataSize()
     }
 
     private fun deleteAllData()
     {
         realmHttpRcvDTO.delete()
-        sharedPfRcvMainDataSize.deleteData()
     }
 
     override fun isRcvAddSizeUp(lastSize: Int): Boolean {
@@ -67,12 +58,12 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
         if ( realmHttpRcvDTO.httpRcvItemData == null)
             return false
 
-        val results = getHttpData().results
+        val resultSize = getHttpData().results!!.size
 
-        val TotalSize = results!!.size
+        val TotalSize = resultSize
         val defSize   = TotalSize - lastSize
 
-        if ( TotalSize <= lastSize || results!!.size <= defSize)
+        if ( TotalSize <= lastSize || resultSize <= defSize)
             return false
 
         return true

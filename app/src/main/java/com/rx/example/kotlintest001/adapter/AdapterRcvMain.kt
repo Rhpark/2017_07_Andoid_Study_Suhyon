@@ -14,13 +14,17 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
     /*한번에 추가로 보여줄수 있는 갯수 20*/
     companion object {  val MAX_ADD_VALUE = 20  }
 
-    var listSize = 0
-
-    var psRcvItemSelected = PublishSubject.create<Int>()
+    var listSize: Int
+    var psRcvItemSelected: PublishSubject<Int>
 
     lateinit var results:MutableList<Result>   //get total data
 
     constructor() : super()
+    {
+        psRcvItemSelected = PublishSubject.create()
+        listSize = 0
+    }
+
 
     fun getItem(position:Int):Result = results.get(position)
 

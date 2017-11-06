@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.http.dao.Result
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
+import io.reactivex.subjects.PublishSubject
 
 /**
  */
@@ -25,9 +25,9 @@ public interface ActivityRcvMainContract {
     {
         var view: ActivityRcvMainContract.View
 
-        fun sendHttp(httpJudgeListener: HttpJudgeListener)
+        fun onStartSendHttp()
 
-        fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, msg: String, adapterRcvMain: AdapterRcvMain)
+        fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
 
         fun sendHttpFail(msg: String,adapterRcvMain: AdapterRcvMain)
 
@@ -41,9 +41,13 @@ public interface ActivityRcvMainContract {
 
         fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int):Boolean
 
-        fun sendHttpRetry(httpJudgeListener: HttpJudgeListener, dataSize:Int)
+        fun sendHttpRetry(dataSize:Int)
 
         fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg): Boolean
+
+        fun httpListenerSuccess(): PublishSubject<Any>
+
+        fun httpListenerFail(): PublishSubject<String>
 
         fun onDestroy()
     }
@@ -53,8 +57,6 @@ public interface ActivityRcvMainContract {
         fun saveDataSendHttpSuccess(httpRcvItemData:HttpRcvItemData)
 
         fun saveDataSendHttpFail()
-
-        fun saveHttpDataSize(dataSize:Int)
 
         fun getDataSize():Int
 

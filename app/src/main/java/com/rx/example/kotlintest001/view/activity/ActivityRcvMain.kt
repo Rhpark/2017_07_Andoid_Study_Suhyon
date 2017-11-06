@@ -1,7 +1,6 @@
 package com.rx.example.kotlintest001.view.activity
 
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -14,7 +13,6 @@ import com.rx.example.kotlintest001.R
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 import com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
@@ -38,9 +36,9 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     private lateinit var adapterRcvMain: AdapterRcvMain
     private lateinit var presenter: ActivityRcvMainPresenter
 
-    private var httpJudgeListener: HttpJudgeListener by Delegates.notNull()
-
-    private var disposable: Disposable by Delegates.notNull()   //recyclerview ItemSelect
+    private var dspbRecyclerViewItemclick:  Disposable by Delegates.notNull()   //recyclerview ItemSelect
+    private var dspbHttpSuccess:            Disposable by Delegates.notNull()   //CallBack Http Success
+    private var dspbHttpFail:               Disposable by Delegates.notNull()   //CallBack Http Fail
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -54,7 +52,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         initListener()
 
         rcvMain.adapter = adapterRcvMain
-        presenter.sendHttp(httpJudgeListener)
+        presenter.onStartSendHttp()
     }
 
     private fun initListener()
@@ -63,11 +61,17 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
         btnSearch.setOnClickListener { clickBtnSearch() }
 
-        disposable = adapterRcvMain.psRcvItemSelected
+        dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
                 .subscribe {
                     Logger.d()
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
                 }
+
+        dspbHttpSuccess = presenter.httpListenerSuccess()
+                .subscribe { presenter.sendHttpSuccess(it as HttpRcvItemData, adapterRcvMain) }
+
+        dspbHttpFail = presenter.httpListenerFail()
+                .subscribe { presenter.sendHttpFail(it, adapterRcvMain) }
 
         rcvMain.addOnScrollListener( object : RecyclerView.OnScrollListener()
         {
@@ -81,15 +85,6 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                     rcvMovoToPositon(presenter.rcvShowAddValue(adapterRcvMain))
             }
         })
-
-        httpJudgeListener = object : HttpJudgeListener
-        {
-            override fun success(gsonConvertData: Any, msg: String)
-                    = presenter.sendHttpSuccess(gsonConvertData as HttpRcvItemData ,msg,adapterRcvMain)
-
-            override fun fail(msg: String)
-                    = presenter.sendHttpFail(msg, adapterRcvMain)
-        }
     }
 
     private fun rcvMovoToPositon(currentPosition:Int) {
@@ -108,12 +103,12 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         val btnOkListener= DialogInterface.OnClickListener {
             dialogInterface, i ->
             if ( presenter.isCheckRetry(ceDlgRetry!!) )
-                presenter.sendHttpRetry(httpJudgeListener,ceDlgRetry!!.getNumber())
+                presenter.sendHttpRetry(ceDlgRetry!!.getNumber())
         }
 
         val btnCancelListener= DialogInterface.OnClickListener {
             dialogInterface, i ->
-            ceDlgRetry!!.closeKeyboard()
+            ceDlgRetry?.closeKeyboard()
         }
 
         ceDlgRetry = AlertEditDlg(this
@@ -122,7 +117,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                 , "Retry send http data size"
                 , "Change the data size 1~5000"
                 , btnOkListener, btnCancelListener)
-        ceDlgRetry!!.showDlg()
+        ceDlgRetry?.showDlg()
     }
 
     private fun clickBtnSearch()
@@ -147,9 +142,9 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                 , (presenter.getDataSize()-1)
                 , InputType.TYPE_CLASS_NUMBER
                 , "Search Data Type Number"
-                , "Search the data No. 1 ~ "+ (presenter.getDataSize()-1)
+                , "Search the data No. 0 ~ "+ (presenter.getDataSize()-1)
                 , btnOkListener, btnCancelListener)
-        ceDlgSearch!!.showDlg()
+        ceDlgSearch?.showDlg()
     }
 
     override fun dismissProgressDialog()
@@ -170,8 +165,9 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     override fun onDestroy()
     {
         super.onDestroy()
-        disposable.dispose()
-//        disposable2.dispose()
+        dspbRecyclerViewItemclick.dispose()
+        dspbHttpSuccess.dispose()
+        dspbHttpFail.dispose()
         presenter.onDestroy()
     }
 }

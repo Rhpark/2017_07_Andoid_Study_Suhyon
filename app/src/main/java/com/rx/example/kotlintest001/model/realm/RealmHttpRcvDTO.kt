@@ -64,10 +64,8 @@ import kotlin.properties.Delegates
             httpRcvItemData!!.results = rResults
         }
 
-        return HttpRcvItemData(rResults , rInfo)
+        return httpRcvItemData!!
     }
-
-    fun getData() : HttpRcvItemData = httpRcvItemData!!
 
     fun delete() {
         realm.executeTransaction {

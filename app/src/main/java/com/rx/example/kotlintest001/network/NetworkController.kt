@@ -67,8 +67,6 @@ public class NetworkController
         val networkCheck = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         Logger.d()
-        if ( networkCheck == null)
-            return false
 
         val wifi    = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
         val mobile  = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)

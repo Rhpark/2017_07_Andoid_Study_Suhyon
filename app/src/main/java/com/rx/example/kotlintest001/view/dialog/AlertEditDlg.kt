@@ -56,7 +56,7 @@ public class AlertEditDlg
     fun isGetNumber():Boolean {
         try
         {
-            var number =  edtText.text.toString().toInt()
+            edtText.text.toString().toInt()
             return true
         }
         catch (e:NumberFormatException)
@@ -74,7 +74,7 @@ public class AlertEditDlg
     fun isShowDlg():Boolean = alertDlg.create().isShowing
 
     fun showDlg() {
-        alertDlg!!.create().show()
+        alertDlg.create().show()
         openKeyboard()
     }
 }

@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 /**
  * Created by Rhpark on 2017-10-29.
  */
-public open abstract class SharedPfBase {
+public abstract class SharedPfBase {
 
     protected val context:Context
     protected open var sp:SharedPreferences? = null

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import io.reactivex.subjects.PublishSubject
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,18 +15,12 @@ import retrofit2.Response
  */
 public class HttpRcvMain : HttpBase
 {
-    private var httpRcvItemData : HttpRcvItemData? = null
-    private var dataSize = 0
-    constructor(httpJudgeListener: HttpJudgeListener, netwrokController: NetworkController, dataSize:Int)
-            : super(httpJudgeListener, netwrokController)
-    {
-        this.dataSize = dataSize
-    }
+    constructor(networkController: NetworkController): super(networkController)
 
-    override fun sendHttp() {
+    override fun sendHttpList(dataSize:Int) {
 
         //RxJava2 Single.
-        http!!.getDatList(dataSize).enqueue(object : Callback<ResponseBody> {
+        http.getDatList(dataSize).enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?)
             {
                 if ( false == response!!.isSuccessful )
@@ -33,15 +28,14 @@ public class HttpRcvMain : HttpBase
                     fail(RESPONE_FAIL)
                     return
                 }
-
                 try
                 {
-                    httpRcvItemData = Gson().fromJson(response.body()!!.string(), HttpRcvItemData::class.java)
-                    success(httpRcvItemData!!, RESPONE_SUCCESS)
+                    val httpRcvItemData = Gson().fromJson(response.body()!!.string(), HttpRcvItemData::class.java)
+                    success(httpRcvItemData)
                 }
                 catch (e: NullPointerException)
                 {
-                    Logger.e("Receive Data Error ",e.printStackTrace().toString())
+                    Logger.e("Receive Data Error ", e.printStackTrace().toString())
                     fail(RESPONE_DATA_ERROR)
                     return
                 }

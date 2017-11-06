@@ -2,6 +2,8 @@ package com.rx.example.kotlintest001.network.http
 
 import com.rx.example.kotlintest001.network.HttpService
 import com.rx.example.kotlintest001.network.NetworkController
+import io.reactivex.subjects.PublishSubject
+import java.io.PushbackInputStream
 
 /**
  * Created by Rhpark on 2017-10-29.
@@ -13,18 +15,19 @@ public abstract class HttpBase {
     open val RESPONE_DATA_ERROR = "Response Data Error"
     open val RESPONE_ON_FAILURE = "Network onFailure"
 
-
-    open val httpJudgeListener : HttpJudgeListener
+    open val psSuccess:PublishSubject<Any>
+    open val psFail:PublishSubject<String>
     open val http: HttpService
 
-    constructor(httpJudgeListener: HttpJudgeListener, netwrokController: NetworkController) {
-        this.httpJudgeListener = httpJudgeListener
+    constructor( netwrokController: NetworkController) {
+        this.psSuccess = PublishSubject.create()
+        this.psFail = PublishSubject.create()
         this.http = netwrokController.getHttpService(HttpService::class.java)
     }
 
-    open abstract fun sendHttp()
+    abstract fun sendHttpList(dataSize:Int)
 
-    open fun fail(msg:String) = httpJudgeListener.fail(msg)
+    open fun fail(msg:String) = psFail.onNext(msg)
 
-    open fun success(hthtpData:Any, msg:String) = httpJudgeListener.success(hthtpData,msg)
+    open fun success(hthtpData:Any) = psSuccess.onNext(hthtpData)
 }

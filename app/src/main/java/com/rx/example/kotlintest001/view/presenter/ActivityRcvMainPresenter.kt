@@ -5,10 +5,10 @@ import android.support.v7.widget.RecyclerView
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.ModelRcvMain
 import com.rx.example.kotlintest001.network.NetworkController
-import com.rx.example.kotlintest001.network.http.HttpJudgeListener
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
+import io.reactivex.subjects.PublishSubject
 
 
 class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
@@ -19,16 +19,19 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     private var modelRcvMain:ModelRcvMain
 
+    private var httpRcvmain:HttpRcvMain
+
     constructor(view: ActivityRcvMainContract.View,context:Context)
     {
         this.view = view
         modelRcvMain = ModelRcvMain(context)
         networkController = NetworkController(context)
+        httpRcvmain = HttpRcvMain(networkController)
     }
 
-    override fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, msg: String,adapterRcvMain: AdapterRcvMain)
+    override fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
     {
-        view.toastShow(msg)
+        view.toastShow(httpRcvmain.RESPONE_SUCCESS)
         rcvAdapterUpdate(gsonConvertData, adapterRcvMain)
 
         modelRcvMain.saveDataSendHttpSuccess(gsonConvertData)
@@ -58,22 +61,24 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         adapterRcvMain.notifyDataSetChanged()
     }
 
-    override fun sendHttp(httpJudgeListener: HttpJudgeListener)
+    override fun onStartSendHttp()
+    {
+        modelRcvMain.loadAllData()
+        sendHttp(modelRcvMain.getDataSize())
+    }
+
+    private fun sendHttp(dataSize:Int)
     {
         if ( true == networkController.isNetworkCheck())
         {
             view.showProgressDialog("통신 중 입니다.\n Data Size " + getDataSize())
-            HttpRcvMain(httpJudgeListener, networkController, modelRcvMain.getDataSize()).sendHttp()
+            httpRcvmain.sendHttpList(dataSize)
         }
         else
             view.toastShow("Please check, Network state")
     }
 
-    override fun sendHttpRetry(httpJudgeListener: HttpJudgeListener, dataSize:Int)
-    {
-        modelRcvMain.saveHttpDataSize(dataSize)
-        sendHttp(httpJudgeListener)
-    }
+    override fun sendHttpRetry(dataSize:Int) = sendHttp(dataSize)
 
     override fun rcvMoveToPosition(rcvMain: RecyclerView, currentPosition:Int)
     {
@@ -143,15 +148,19 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
             return false
         }
 
-         val getValue = ceDlgRetry.getNumber()
-         if ( getValue  < 0 || getValue > (getDataSize()-1))
-         {
-             view.toastShow("Can not Change Data Size\n please Input Number Size 1 ~ " + (getDataSize()-1))
-             return false
-         }
-         view.toastShow("find Data!")
-         return true
+        val getValue = ceDlgRetry.getNumber()
+        if ( getValue  < 0 || getValue > (getDataSize()-1))
+        {
+            view.toastShow("Can not Change Data Size\n please Input Number Size 1 ~ " + (getDataSize()-1))
+            return false
+        }
+        view.toastShow("find Data!")
+        return true
     }
+
+    override fun httpListenerSuccess(): PublishSubject<Any> = httpRcvmain.psSuccess
+
+    override fun httpListenerFail(): PublishSubject<String> = httpRcvmain.psFail
 
     override fun getDataSize():Int = modelRcvMain.getDataSize()
 
