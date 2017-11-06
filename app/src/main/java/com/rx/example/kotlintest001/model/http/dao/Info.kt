@@ -7,28 +7,10 @@ import io.realm.RealmObject
 /**
  */
 
-public open class Info :RealmObject {
+open class Info(var seed: String? = "TempSeed"
+                , var results: Int? = -9999
+                , var page: Int? = -9999
+                , var version: String? = " TempVersion") :RealmObject()
+{
 
-
-    @SerializedName("seed")
-    @Expose
-    var seed: String? = null
-    @SerializedName("results")
-    @Expose
-    var results: Int? = null
-    @SerializedName("page")
-    @Expose
-    var page: Int? = null
-    @SerializedName("version")
-    @Expose
-    var version: String? = null
-
-    constructor(seed: String?, results: Int?, page: Int?, version: String?) : super() {
-        this.seed = seed
-        this.results = results
-        this.page = page
-        this.version = version
-    }
-
-    constructor() : super()
 }

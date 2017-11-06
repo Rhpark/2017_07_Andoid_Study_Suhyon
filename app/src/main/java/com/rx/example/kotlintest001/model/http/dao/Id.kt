@@ -6,21 +6,9 @@ import io.realm.RealmObject
 
 /**
  */
+open class Id(var name: String? = "TempName"
+              , var value: String? = "TempValue"): RealmObject()
+{
 
-public open class Id :RealmObject {
-
-    @SerializedName("name")
-    @Expose
-    var name: String? = null
-    @SerializedName("value")
-    @Expose
-    var value: String? = null
-
-    public constructor(name: String?, value: String?) : super() {
-        this.name = name
-        this.value = value
-    }
-
-    public constructor() : super()
 }
 

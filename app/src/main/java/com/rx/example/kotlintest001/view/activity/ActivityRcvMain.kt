@@ -63,7 +63,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
         btnSearch.setOnClickListener { clickBtnSearch() }
 
-        /*disposable =*/ adapterRcvMain.psRcvItemSelected
+        disposable = adapterRcvMain.psRcvItemSelected
                 .subscribe {
                     Logger.d()
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
@@ -170,7 +170,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     override fun onDestroy()
     {
         super.onDestroy()
-//        disposable1.dispose()
+        disposable.dispose()
 //        disposable2.dispose()
         presenter.onDestroy()
     }

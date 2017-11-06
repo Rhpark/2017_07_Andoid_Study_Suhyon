@@ -7,61 +7,18 @@ import io.realm.RealmObject
 /**
  */
 
-public open class Result :RealmObject {
+open class Result(var gender: String? = "TempGender"
+                  , var name: Name? = null
+                  , var location: Location? = null
+                  , var email: String? = "TempEmail"
+                  , var login: Login? = null
+                  , var dob: String? = "TempDob"
+                  , var registered: String? = "TempRegstered"
+                  , var phone: String? = "TempPhone"
+                  , var cell: String? = "TempCell"
+                  , var id: Id? = null
+                  , var picture: Picture? = null
+                  , var nat: String? = null) :RealmObject()
+{
 
-    @SerializedName("gender")
-    @Expose
-    var gender: String? = null
-    @SerializedName("name")
-    @Expose
-    var name: Name? = Name("","","")
-    @SerializedName("location")
-    @Expose
-    var location: Location? = Location("","","","")
-    @SerializedName("email")
-    @Expose
-    var email: String? = null
-    @SerializedName("login")
-    @Expose
-    var login: Login? = Login("","","","","","")
-    @SerializedName("dob")
-    @Expose
-    var dob: String? = null
-    @SerializedName("registered")
-    @Expose
-    var registered: String? = null
-    @SerializedName("phone")
-    @Expose
-    var phone: String? = null
-    @SerializedName("cell")
-    @Expose
-    var cell: String? = null
-    @SerializedName("id")
-    @Expose
-    var id: Id? = Id("","")
-    @SerializedName("picture")
-    @Expose
-    var picture: Picture? = Picture("","","")
-    @SerializedName("nat")
-    @Expose
-    var nat: String? = null
-
-    public constructor() : super()
-
-    constructor(gender: String?, name: Name?, location: Location?, email: String?, login: Login?,
-                dob: String?, registered: String?, phone: String?, cell: String?, id: Id?,
-                picture: Picture?, nat: String?) : super() {
-        this.gender = gender
-        this.name = name
-        this.location = location
-        this.email = email
-        this.login = login
-        this.dob = dob
-        this.registered = registered
-        this.phone = phone
-        this.cell = cell
-        this.id = id
-        this.picture = picture
-        this.nat = nat
-    }
 }

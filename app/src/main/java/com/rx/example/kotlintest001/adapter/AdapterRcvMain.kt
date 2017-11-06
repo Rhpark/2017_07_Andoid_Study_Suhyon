@@ -22,7 +22,7 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
 
     constructor() : super()
 
-    fun getItem(position:Int):Result = results?.get(position)
+    fun getItem(position:Int):Result = results.get(position)
 
     fun addItemListSize()
     {
