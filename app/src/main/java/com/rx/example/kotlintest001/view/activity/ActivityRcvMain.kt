@@ -39,6 +39,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     private var dspbRecyclerViewItemclick:  Disposable by Delegates.notNull()   //recyclerview ItemSelect
     private var dspbHttpSuccess:            Disposable by Delegates.notNull()   //CallBack Http Success
     private var dspbHttpFail:               Disposable by Delegates.notNull()   //CallBack Http Fail
+    private var dspbRealmIsInserted:        Disposable by Delegates.notNull()   //CallBack Http Fail
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -70,6 +71,14 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         dspbHttpFail = presenter.httpListenerFail()
                 .subscribe { presenter.sendHttpFail(it, adapterRcvMain) }
 
+        dspbRealmIsInserted = presenter.getRealmIsInserted()
+                .subscribe {
+                    if ( true == it)    setClickBtn(true)
+                    else {
+                        toastShow("Data Save Fail,Please reset")
+                        setClickBtn(false)
+                    }
+                }
 
         //recyclerViewCheck
         dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
@@ -163,6 +172,12 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
             pd.dismiss()
         pd.setMessage(msg)
         pd.show()
+    }
+
+    override fun setClickBtn(clickable: Boolean)
+    {
+        btnRetry.isClickable = clickable
+        btnSearch.isClickable = clickable
     }
 
     override fun toastShow(msg: String) = Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()

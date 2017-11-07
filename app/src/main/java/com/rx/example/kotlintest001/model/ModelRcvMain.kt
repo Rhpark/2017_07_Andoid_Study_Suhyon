@@ -14,7 +14,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
 
     private val context: Context
 
-    private val realmHttpRcvDTO by lazy{    RealmHttpRcvDTO() }
+    val realmHttpRcvDTO by lazy{    RealmHttpRcvDTO() }
 
     constructor(context: Context)
     {

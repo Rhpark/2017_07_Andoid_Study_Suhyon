@@ -18,6 +18,8 @@ public interface ActivityRcvMainContract {
         fun showProgressDialog(msg:String)
 
         fun dismissProgressDialog()
+
+        fun setClickBtn(clickable:Boolean)
     }
 
     interface Presenter
@@ -47,6 +49,8 @@ public interface ActivityRcvMainContract {
         fun httpListenerSuccess(): PublishSubject<HttpRcvItemData>
 
         fun httpListenerFail(): PublishSubject<String>
+
+        fun getRealmIsInserted():PublishSubject<Boolean>
 
         fun onDestroy()
     }

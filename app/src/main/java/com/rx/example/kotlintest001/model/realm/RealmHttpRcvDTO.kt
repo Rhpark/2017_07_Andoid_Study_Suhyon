@@ -6,6 +6,7 @@ import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.model.http.dao.Info
 import com.rx.example.kotlintest001.model.http.dao.Result
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import io.reactivex.subjects.PublishSubject
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlin.properties.Delegates
@@ -16,12 +17,14 @@ import kotlin.properties.Delegates
  class RealmHttpRcvDTO
 {
     var httpRcvItemData: HttpRcvItemData? = null
+    var psRealmlIsInserted: PublishSubject<Boolean>
 
     private var realm : Realm by Delegates.notNull()
 
     constructor() : super()
     {
         realm = Realm.getDefaultInstance()
+        psRealmlIsInserted = PublishSubject.create()
     }
 
     fun insertAll(httpRcvItemData: HttpRcvItemData, context: Context)
@@ -35,11 +38,13 @@ import kotlin.properties.Delegates
                     this.httpRcvItemData = httpRcvItemData
                     Toast.makeText(context,"data is Saved",Toast.LENGTH_SHORT).show()
                     Logger.d("Realm Save Success")
+                    psRealmlIsInserted.onNext(true)
                 }
                 ,
                 {
                     Toast.makeText(context,"data save is fail",Toast.LENGTH_SHORT).show()
                     Logger.d("Realm Save fail" + it.printStackTrace())
+                    psRealmlIsInserted.onNext(false)
                 })
     }
 

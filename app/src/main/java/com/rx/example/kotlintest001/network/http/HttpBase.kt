@@ -29,5 +29,5 @@ public abstract class HttpBase {
 
     open fun fail(msg:String) = psFail.onNext(msg)
 
-    open fun success(hthtpData:HttpRcvItemData) = psSuccess.onNext(hthtpData)
+    open fun success(httpData:HttpRcvItemData) = psSuccess.onNext(httpData)
 }

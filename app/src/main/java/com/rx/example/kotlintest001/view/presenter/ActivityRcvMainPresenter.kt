@@ -73,6 +73,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     {
         if ( true == networkController.isNetworkCheck())
         {
+            view.setClickBtn(false)
             view.showProgressDialog("통신 중 입니다.\n Data Size " + dataSize)
             httpRcvmain.sendHttpList(dataSize)
         }
@@ -165,6 +166,8 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     override fun httpListenerFail(): PublishSubject<String> = httpRcvmain.psFail
 
     override fun getDataSize():Int = modelRcvMain.getDataSize()
+
+    override fun getRealmIsInserted(): PublishSubject<Boolean> = modelRcvMain.realmHttpRcvDTO.psRealmlIsInserted
 
     override fun onDestroy()
     {
