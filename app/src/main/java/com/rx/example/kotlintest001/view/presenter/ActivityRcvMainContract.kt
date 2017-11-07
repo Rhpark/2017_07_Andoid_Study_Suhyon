@@ -1,6 +1,5 @@
 package com.rx.example.kotlintest001.view.presenter
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.http.dao.Result
@@ -45,7 +44,7 @@ public interface ActivityRcvMainContract {
 
         fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg): Boolean
 
-        fun httpListenerSuccess(): PublishSubject<Any>
+        fun httpListenerSuccess(): PublishSubject<HttpRcvItemData>
 
         fun httpListenerFail(): PublishSubject<String>
 

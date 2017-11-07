@@ -57,21 +57,26 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
     private fun initListener()
     {
+        //buttonClick
         btnRetry.setOnClickListener { clickBtnRetry() }
 
         btnSearch.setOnClickListener { clickBtnSearch() }
 
-        dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
-                .subscribe {
-                    Logger.d()
-                    CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
-                }
 
+        //httpCallBack
         dspbHttpSuccess = presenter.httpListenerSuccess()
                 .subscribe { presenter.sendHttpSuccess(it as HttpRcvItemData, adapterRcvMain) }
 
         dspbHttpFail = presenter.httpListenerFail()
                 .subscribe { presenter.sendHttpFail(it, adapterRcvMain) }
+
+
+        //recyclerViewCheck
+        dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
+                .subscribe {
+                    Logger.d()
+                    CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
+                }
 
         rcvMain.addOnScrollListener( object : RecyclerView.OnScrollListener()
         {

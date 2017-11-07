@@ -1,11 +1,8 @@
 package com.rx.example.kotlintest001.network.http
 
-import com.google.gson.Gson
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import io.reactivex.subjects.PublishSubject
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,8 +17,8 @@ public class HttpRcvMain : HttpBase
     override fun sendHttpList(dataSize:Int) {
 
         //RxJava2 Single.
-        http.getDatList(dataSize).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?)
+        http.getDatList(dataSize).enqueue(object : Callback<HttpRcvItemData> {
+            override fun onResponse(call: Call<HttpRcvItemData>?, response: Response<HttpRcvItemData>?)
             {
                 if ( false == response!!.isSuccessful )
                 {
@@ -30,8 +27,7 @@ public class HttpRcvMain : HttpBase
                 }
                 try
                 {
-                    val httpRcvItemData = Gson().fromJson(response.body()!!.string(), HttpRcvItemData::class.java)
-                    success(httpRcvItemData)
+                    success(response.body()!!)
                 }
                 catch (e: NullPointerException)
                 {
@@ -41,7 +37,7 @@ public class HttpRcvMain : HttpBase
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?)
+            override fun onFailure(call: Call<HttpRcvItemData>?, t: Throwable?)
             {
                 fail(RESPONE_ON_FAILURE)
             }

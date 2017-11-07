@@ -31,7 +31,6 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
     {
-        view.toastShow(httpRcvmain.RESPONE_SUCCESS)
         rcvAdapterUpdate(gsonConvertData, adapterRcvMain)
 
         modelRcvMain.saveDataSendHttpSuccess(gsonConvertData)
@@ -41,9 +40,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun sendHttpFail(msg: String,adapterRcvMain: AdapterRcvMain)
     {
-        //인터넷은 연결, 서버에 문제가 있을시.
         view.toastShow(msg)
-
         if ( modelRcvMain.isGetResultData())
         {
             modelRcvMain.saveDataSendHttpFail()
@@ -63,15 +60,20 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun onStartSendHttp()
     {
-        modelRcvMain.loadAllData()
-        sendHttp(modelRcvMain.getDataSize())
+        if ( modelRcvMain.isGetResultData())
+        {
+            modelRcvMain.loadAllData()
+            sendHttp(modelRcvMain.getDataSize())
+        }
+        else
+            sendHttp(5000)
     }
 
     private fun sendHttp(dataSize:Int)
     {
         if ( true == networkController.isNetworkCheck())
         {
-            view.showProgressDialog("통신 중 입니다.\n Data Size " + getDataSize())
+            view.showProgressDialog("통신 중 입니다.\n Data Size " + dataSize)
             httpRcvmain.sendHttpList(dataSize)
         }
         else
@@ -158,7 +160,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         return true
     }
 
-    override fun httpListenerSuccess(): PublishSubject<Any> = httpRcvmain.psSuccess
+    override fun httpListenerSuccess(): PublishSubject<HttpRcvItemData> = httpRcvmain.psSuccess
 
     override fun httpListenerFail(): PublishSubject<String> = httpRcvmain.psFail
 
