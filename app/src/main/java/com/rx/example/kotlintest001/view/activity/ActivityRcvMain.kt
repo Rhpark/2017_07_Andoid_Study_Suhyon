@@ -41,6 +41,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        Logger.d()
         setContentView(R.layout.activity_main_rcv)
 
         adapterRcvMain = AdapterRcvMain()
@@ -50,8 +51,25 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
         initListener()
 
         rcvMain.adapter = adapterRcvMain
-        presenter.onStartSendHttp()
+
+        if ( null == savedInstanceState )   presenter.onStartSendHttp()
     }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?)
+    {
+        super.onRestoreInstanceState(savedInstanceState)
+        Logger.d()
+
+        if ( savedInstanceState == null) return
+
+        val currentRcvPosition = savedInstanceState.getInt("currentRcvPosition")
+        val adapterListItemCount = savedInstanceState.getInt("adapterListItemCount")
+        Logger.d(" if currentRcvPosition $currentRcvPosition  adapterListItemCount $adapterListItemCount")
+
+        if ( presenter.savedInstanceState(adapterRcvMain, adapterListItemCount))
+            rcvMain.scrollToPosition(currentRcvPosition)
+    }
+
 
     private fun initListener()
     {
@@ -73,16 +91,17 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val currentposition = (rcvMain.getLayoutManager() as LinearLayoutManager)
-                        .findLastCompletelyVisibleItemPosition()
+                val currentposition = getCurrentRcvPosition()
 
                 if ( true == presenter.isCheckAdapterItemSizeAdd(currentposition, adapterRcvMain.itemCount, adapterRcvMain.results.size) )
                     rcvMovoToPositon(presenter.rcvShowAddValue(adapterRcvMain))
             }
         })
-
         presenter.listener(adapterRcvMain)
     }
+
+    private fun getCurrentRcvPosition() =
+            (rcvMain.getLayoutManager() as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
 
     private fun rcvMovoToPositon(currentPosition:Int)
     {
@@ -162,9 +181,20 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 
     override fun toastShow(msg: String) = Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
 
+    override fun onSaveInstanceState(outState: Bundle?)
+    {
+        super.onSaveInstanceState(outState)
+        Logger.d()
+        val currentRcvPosition = getCurrentRcvPosition()-1
+        val adapterListItemCount = rcvMain.adapter.itemCount
+        outState?.putInt("currentRcvPosition",currentRcvPosition)
+        outState?.putInt("adapterListItemCount",adapterListItemCount)
+    }
+
     override fun onDestroy()
     {
         super.onDestroy()
+        Logger.d()
         dspbRecyclerViewItemclick.dispose()
         presenter.onDestroy()
     }

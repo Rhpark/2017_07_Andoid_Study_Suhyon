@@ -9,8 +9,8 @@ import io.reactivex.subjects.PublishSubject
 
 /**
  */
-class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
-
+class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
+{
     /*한번에 추가로 보여줄수 있는 갯수 20*/
     companion object {  val MAX_ADD_VALUE = 20  }
 

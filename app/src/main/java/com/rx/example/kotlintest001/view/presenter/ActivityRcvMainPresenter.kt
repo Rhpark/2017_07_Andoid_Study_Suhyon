@@ -44,14 +44,33 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     fun sendHttpFail(msg: String,adapterRcvMain: AdapterRcvMain)
     {
         view.toastShow(msg)
+
+        if ( true == adapterUpdate(adapterRcvMain))
+            view.toastShow("Load data, from realm")
+
+        view.dismissProgressDialog()
+    }
+
+    fun adapterUpdate(adapterRcvMain: AdapterRcvMain):Boolean {
+
         if ( modelRcvMain.isGetResultData())
         {
             modelRcvMain.loadAllData()
             rcvAdapterUpdate(modelRcvMain.getHttpData(), adapterRcvMain)
-            view.toastShow("Load data, from realm")
+            return true
         }
+        return false
+    }
 
-        view.dismissProgressDialog()
+    fun savedInstanceState(adapterRcvMain: AdapterRcvMain, adapterListItemCount: Int):Boolean {
+
+        if ( adapterUpdate( adapterRcvMain ))
+        {
+            adapterRcvMain.listSize = adapterListItemCount
+            adapterRcvMain.notifyDataSetChanged()
+            return true
+        }
+        return false
     }
 
     override fun onStartSendHttp()
