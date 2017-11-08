@@ -18,8 +18,6 @@ public interface ActivityRcvMainContract {
         fun showProgressDialog(msg:String)
 
         fun dismissProgressDialog()
-
-        fun setClickBtn(clickable:Boolean)
     }
 
     interface Presenter
@@ -28,17 +26,9 @@ public interface ActivityRcvMainContract {
 
         fun onStartSendHttp()
 
-        fun sendHttpSuccess(gsonConvertData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
-
-        fun sendHttpFail(msg: String,adapterRcvMain: AdapterRcvMain)
-
         fun isCheckRetry(ceDlgRetry : AlertEditDlg):Boolean
 
-        fun getDataSize():Int
-
         fun rcvShowAddValue(adapterRcvMain: AdapterRcvMain):Int
-
-        fun rcvMoveToPosition(rcvMain: RecyclerView, currentPosition:Int)
 
         fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int):Boolean
 
@@ -46,11 +36,9 @@ public interface ActivityRcvMainContract {
 
         fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg): Boolean
 
-        fun httpListenerSuccess(): PublishSubject<HttpRcvItemData>
+        fun listener(adapter:AdapterRcvMain)
 
-        fun httpListenerFail(): PublishSubject<String>
-
-        fun getRealmIsInserted():PublishSubject<Boolean>
+        fun isBtnClick():Boolean
 
         fun onDestroy()
     }

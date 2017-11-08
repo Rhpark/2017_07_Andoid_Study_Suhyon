@@ -25,7 +25,6 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
         listSize = 0
     }
 
-
     fun getItem(position:Int):Result = results.get(position)
 
     fun addItemListSize()

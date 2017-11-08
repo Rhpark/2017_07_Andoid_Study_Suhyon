@@ -12,7 +12,6 @@ import android.widget.Toast
 import com.rx.example.kotlintest001.R
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 import com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
@@ -37,9 +36,6 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     private lateinit var presenter: ActivityRcvMainPresenter
 
     private var dspbRecyclerViewItemclick:  Disposable by Delegates.notNull()   //recyclerview ItemSelect
-    private var dspbHttpSuccess:            Disposable by Delegates.notNull()   //CallBack Http Success
-    private var dspbHttpFail:               Disposable by Delegates.notNull()   //CallBack Http Fail
-    private var dspbRealmIsInserted:        Disposable by Delegates.notNull()   //CallBack Http Fail
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -63,30 +59,14 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
         btnSearch.setOnClickListener { clickBtnSearch() }
 
-
-        //httpCallBack
-        dspbHttpSuccess = presenter.httpListenerSuccess()
-                .subscribe { presenter.sendHttpSuccess(it as HttpRcvItemData, adapterRcvMain) }
-
-        dspbHttpFail = presenter.httpListenerFail()
-                .subscribe { presenter.sendHttpFail(it, adapterRcvMain) }
-
-        dspbRealmIsInserted = presenter.getRealmIsInserted()
-                .subscribe {
-                    if ( true == it)    setClickBtn(true)
-                    else {
-                        toastShow("Data Save Fail,Please reset")
-                        setClickBtn(false)
-                    }
-                }
-
-        //recyclerViewCheck
+        //recyclerViewItemCheck
         dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
                 .subscribe {
                     Logger.d()
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
                 }
 
+        //recyclerViewBottomCheck -> ItemSizeUp
         rcvMain.addOnScrollListener( object : RecyclerView.OnScrollListener()
         {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
@@ -99,6 +79,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                     rcvMovoToPositon(presenter.rcvShowAddValue(adapterRcvMain))
             }
         })
+
+        presenter.listener(adapterRcvMain)
     }
 
     private fun rcvMovoToPositon(currentPosition:Int) {
@@ -107,12 +89,15 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())//결과 스레드 설정
                 .subscribe {
-                    presenter.rcvMoveToPosition(rcvMain, (adapterRcvMain.listSize - currentPosition))
+                    rcvMain.smoothScrollToPosition(currentPosition )
+                    dismissProgressDialog()
                 }
     }
 
     private fun clickBtnRetry()
     {
+        if ( false == presenter.isBtnClick())   return
+
         var ceDlgRetry : AlertEditDlg? = null
         val btnOkListener= DialogInterface.OnClickListener {
             dialogInterface, i ->
@@ -126,7 +111,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         }
 
         ceDlgRetry = AlertEditDlg(this
-                , presenter.getDataSize()
+                , adapterRcvMain.results.size
                 , InputType.TYPE_CLASS_NUMBER
                 , "Retry send http data size"
                 , "Change the data size 1~5000"
@@ -136,6 +121,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
     private fun clickBtnSearch()
     {
+        if ( false == presenter.isBtnClick())   return
+
         var ceDlgSearch : AlertEditDlg? = null
 
         val btnOkListener= DialogInterface.OnClickListener {
@@ -152,11 +139,12 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
             ceDlgSearch!!.closeKeyboard()
         }
 
+        val maxsize = ( adapterRcvMain.results.size - 1 )
         ceDlgSearch = AlertEditDlg(this
-                , (presenter.getDataSize()-1)
+                , maxsize
                 , InputType.TYPE_CLASS_NUMBER
                 , "Search Data Type Number"
-                , "Search the data No. 0 ~ "+ (presenter.getDataSize()-1)
+                , "Search the data No. 0 ~ "+ maxsize
                 , btnOkListener, btnCancelListener)
         ceDlgSearch?.showDlg()
     }
@@ -174,20 +162,12 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         pd.show()
     }
 
-    override fun setClickBtn(clickable: Boolean)
-    {
-        btnRetry.isClickable = clickable
-        btnSearch.isClickable = clickable
-    }
-
     override fun toastShow(msg: String) = Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
 
     override fun onDestroy()
     {
         super.onDestroy()
         dspbRecyclerViewItemclick.dispose()
-        dspbHttpSuccess.dispose()
-        dspbHttpFail.dispose()
         presenter.onDestroy()
     }
 }

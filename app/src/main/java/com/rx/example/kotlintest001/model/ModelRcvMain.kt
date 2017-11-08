@@ -25,7 +25,6 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
     {
         deleteAllData()
         saveHttpData(httpRcvItemData)
-//        realmHttpRcvDTO.insertAll(httpRcvItemData, context)
     }
 
     override fun saveDataSendHttpFail()
