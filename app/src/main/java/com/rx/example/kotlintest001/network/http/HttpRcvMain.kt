@@ -21,8 +21,8 @@ public class HttpRcvMain : HttpBase
 
     constructor(networkController: NetworkController): super(networkController)
 
-    override fun sendHttpList(dataSize:Int) {
-
+    override fun sendHttpList(dataSize:Int)
+    {
         startTime = System.currentTimeMillis()
 
         //RxJava2 Single.

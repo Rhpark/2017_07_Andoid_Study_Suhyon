@@ -15,8 +15,8 @@ import com.rx.example.kotlintest001.model.http.dao.Result
 import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
 import kotlin.properties.Delegates
 
-class CustomDlgResultInfo : Dialog {
-
+class CustomDlgResultInfo : Dialog
+{
     val selectNumber:Int
     val result: Result
 

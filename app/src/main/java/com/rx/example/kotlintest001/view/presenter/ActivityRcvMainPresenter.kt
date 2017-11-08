@@ -15,8 +15,6 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 {
     override var view: ActivityRcvMainContract.View
 
-    var isSaveData:Boolean  = true
-
     private var networkController: NetworkController
 
     private var modelRcvMain:ModelRcvMain
@@ -40,7 +38,6 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         rcvAdapterUpdate(httpRcvItemData, adapterRcvMain)
 
         view.dismissProgressDialog()
-        isSaveData = false
         modelRcvMain.saveDataSendHttpSuccess(httpRcvItemData)
     }
 
@@ -49,8 +46,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         view.toastShow(msg)
         if ( modelRcvMain.isGetResultData())
         {
-            isSaveData = false
-            modelRcvMain.saveDataSendHttpFail()
+            modelRcvMain.loadAllData()
             rcvAdapterUpdate(modelRcvMain.getHttpData(), adapterRcvMain)
             view.toastShow("Load data, from realm")
         }
@@ -82,8 +78,8 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun sendHttpRetry(dataSize:Int) = sendHttp(dataSize)
 
-    override fun listener(adapter:AdapterRcvMain) {
-
+    override fun listener(adapter:AdapterRcvMain)
+    {
         //httpCallBack
         dspbHttpSuccess = httpRcvmain.psSuccess.subscribe { sendHttpSuccess(it, adapter) }
 
@@ -91,8 +87,6 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
         dspbRealmIsInserted = modelRcvMain.realmHttpRcvDTO.psRealmlIsInserted
                 .subscribe {
-
-                    isSaveData = true
                     if ( it  == false)  view.toastShow("Data Save Fail")
                 }
     }
@@ -108,7 +102,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     {
         view.showProgressDialog("add Data..")
 
-        val defSize   = modelRcvMain.getHttpResults().size - adapterRcvMain.listSize
+        val defSize   = adapterRcvMain.results.size - adapterRcvMain.listSize
 
         var moveToPosition = AdapterRcvMain.MAX_ADD_VALUE
 
@@ -119,12 +113,12 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
         adapterRcvMain.notifyDataSetChanged()
 
-        return moveToPosition
+        return ( adapterRcvMain.listSize - (moveToPosition-1))
     }
 
-    override fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int):Boolean
+    override fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int, totalDataSize:Int):Boolean
         = ( true == isCheckRcvScrollBottom(currentPosition, itemCount)
-            && true == modelRcvMain.isRcvAddSizeUp( itemCount ))
+            && true == isRcvAddSizeUp( itemCount,totalDataSize ))
 
     private fun isCheckRcvScrollBottom(currentPosition: Int, itemCount:Int): Boolean
             = ( currentPosition == itemCount-1 )
@@ -150,7 +144,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         }
     }
 
-    override fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg): Boolean
+    override fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg, dataSize:Int): Boolean
     {
         ceDlgRetry.closeKeyboard()
 
@@ -167,24 +161,23 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
         }
 
         val getValue = ceDlgRetry.getNumber()
-        val dataSize = modelRcvMain.getDataSize() - 1
 
         if ( getValue  < 0 || getValue > dataSize)
         {
-            view.toastShow("Can not Change Data Size\n please Input Number Size 1 ~ " + dataSize)
+            view.toastShow("Can not Change Data Size\n please Input Number Size 1 ~ " + (dataSize - 1) )
             return false
         }
         view.toastShow("find Data!")
         return true
     }
 
-    override fun isBtnClick():Boolean
+    private fun isRcvAddSizeUp(lastSize: Int, resultsDataSize:Int): Boolean
     {
-        if ( false == isSaveData )
-        {
-            view.toastShow("waiting..Saving DataList")
+        val defSize   = resultsDataSize - lastSize
+
+        if ( resultsDataSize <= lastSize || resultsDataSize <= defSize)
             return false
-        }
+
         return true
     }
 

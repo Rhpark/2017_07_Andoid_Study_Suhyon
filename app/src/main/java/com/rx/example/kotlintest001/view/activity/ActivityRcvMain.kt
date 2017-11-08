@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 
-class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
-
+class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
+{
     private val rcvMain     by lazy{    findViewById(R.id.rcvMain)  as RecyclerView }
     private val btnRetry    by lazy{    findViewById(R.id.btnRetry) as Button }
     private val btnSearch   by lazy{    findViewById(R.id.btnSearch) as Button }
@@ -33,6 +33,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
     private lateinit var pd : ProgressDialog
 
     private lateinit var adapterRcvMain: AdapterRcvMain
+
     private lateinit var presenter: ActivityRcvMainPresenter
 
     private var dspbRecyclerViewItemclick:  Disposable by Delegates.notNull()   //recyclerview ItemSelect
@@ -75,7 +76,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
                 val currentposition = (rcvMain.getLayoutManager() as LinearLayoutManager)
                         .findLastCompletelyVisibleItemPosition()
 
-                if ( true == presenter.isCheckAdapterItemSizeAdd(currentposition, adapterRcvMain.itemCount) )
+                if ( true == presenter.isCheckAdapterItemSizeAdd(currentposition, adapterRcvMain.itemCount, adapterRcvMain.results.size) )
                     rcvMovoToPositon(presenter.rcvShowAddValue(adapterRcvMain))
             }
         })
@@ -83,7 +84,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
         presenter.listener(adapterRcvMain)
     }
 
-    private fun rcvMovoToPositon(currentPosition:Int) {
+    private fun rcvMovoToPositon(currentPosition:Int)
+    {
 
         Observable.timer(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
@@ -96,8 +98,6 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
     private fun clickBtnRetry()
     {
-        if ( false == presenter.isBtnClick())   return
-
         var ceDlgRetry : AlertEditDlg? = null
         val btnOkListener= DialogInterface.OnClickListener {
             dialogInterface, i ->
@@ -121,13 +121,11 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View {
 
     private fun clickBtnSearch()
     {
-        if ( false == presenter.isBtnClick())   return
-
         var ceDlgSearch : AlertEditDlg? = null
 
         val btnOkListener= DialogInterface.OnClickListener {
             dialogInterface, i ->
-            if ( true == presenter.isCheckSearchDlgBtnOk( ceDlgSearch!! ))
+            if ( true == presenter.isCheckSearchDlgBtnOk( ceDlgSearch!!, adapterRcvMain.results.size ))
             {
                 val value = ceDlgSearch!!.getNumber()
                 CustomDlgResultInfo(this, value, adapterRcvMain.results.get( value )).show()

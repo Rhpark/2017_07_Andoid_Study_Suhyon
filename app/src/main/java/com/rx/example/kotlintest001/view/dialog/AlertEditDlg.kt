@@ -25,7 +25,8 @@ public class AlertEditDlg
     private var imm: InputMethodManager by Delegates.notNull()
 
     constructor(activity: AppCompatActivity, dataSize:Int, intputType:Int, title:String, subMsg:String,
-                btnOk: DialogInterface.OnClickListener, btnCancel: DialogInterface.OnClickListener) {
+                btnOk: DialogInterface.OnClickListener, btnCancel: DialogInterface.OnClickListener)
+    {
         this.activity = activity
         this.btnOk = btnOk
         this.btnCancel = btnCancel
@@ -53,7 +54,8 @@ public class AlertEditDlg
 
     fun getNumber():Int = edtText.text.toString().toInt()
 
-    fun isGetNumber():Boolean {
+    fun isGetNumber():Boolean
+    {
         try
         {
             edtText.text.toString().toInt()
@@ -73,7 +75,8 @@ public class AlertEditDlg
 
     fun isShowDlg():Boolean = alertDlg.create().isShowing
 
-    fun showDlg() {
+    fun showDlg()
+    {
         alertDlg.create().show()
         openKeyboard()
     }

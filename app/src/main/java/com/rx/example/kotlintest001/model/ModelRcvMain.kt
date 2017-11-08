@@ -10,8 +10,8 @@ import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
 /**
  * Created by INNO_14 on 2017-11-01.
  */
-class ModelRcvMain : ActivityRcvMainContract.Model{
-
+class ModelRcvMain : ActivityRcvMainContract.Model
+{
     private val context: Context
 
     val realmHttpRcvDTO by lazy{    RealmHttpRcvDTO() }
@@ -27,10 +27,9 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
         saveHttpData(httpRcvItemData)
     }
 
-    override fun saveDataSendHttpFail()
-    {
-        loadAllData()
-    }
+    private fun deleteAllData() {   realmHttpRcvDTO.delete()    }
+
+    private fun saveHttpData(httpRcvItemData: HttpRcvItemData) = realmHttpRcvDTO.insertAll(httpRcvItemData, context)
 
     override fun getDataSize(): Int = realmHttpRcvDTO.httpRcvItemData!!.results!!.size
 
@@ -40,33 +39,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model{
 
     override fun getHttpResults(): MutableList<Result> = realmHttpRcvDTO.httpRcvItemData!!.results!!
 
-    private fun saveHttpData(httpRcvItemData: HttpRcvItemData) = realmHttpRcvDTO.insertAll(httpRcvItemData, context)
-
-    fun loadAllData()
-    {
-        realmHttpRcvDTO.loadData()
-    }
-
-    private fun deleteAllData()
-    {
-        realmHttpRcvDTO.delete()
-    }
-
-    override fun isRcvAddSizeUp(lastSize: Int): Boolean {
-
-        if ( realmHttpRcvDTO.httpRcvItemData == null)
-            return false
-
-        val resultSize = getHttpData().results!!.size
-
-        val TotalSize = resultSize
-        val defSize   = TotalSize - lastSize
-
-        if ( TotalSize <= lastSize || resultSize <= defSize)
-            return false
-
-        return true
-    }
+    override fun loadAllData() {    realmHttpRcvDTO.loadData()  }
 
     override fun onDestroy()
     {

@@ -6,8 +6,8 @@ import retrofit2.Response
 /**
  * Created by Rhpark on 2017-10-29.
  */
-public interface HttpJudgeListener {
-
+public interface HttpJudgeListener
+{
     public fun fail(msg:String)
     public fun success(gsonConvertData: Any, msg:String)
 }

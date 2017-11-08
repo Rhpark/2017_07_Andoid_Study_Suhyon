@@ -8,8 +8,8 @@ import io.reactivex.subjects.PublishSubject
 /**
  * Created by Rhpark on 2017-10-29.
  */
-public abstract class HttpBase {
-
+public abstract class HttpBase
+{
     open val RESPONE_FAIL       = "Response Fail"
     open val RESPONE_SUCCESS    = "Response isSuccessful"
     open val RESPONE_DATA_ERROR = "Response Data Error"
@@ -19,7 +19,8 @@ public abstract class HttpBase {
     open val psFail: PublishSubject<String>
     open val http: HttpService
 
-    constructor( netwrokController: NetworkController) {
+    constructor( netwrokController: NetworkController)
+    {
         this.psSuccess = PublishSubject.create()
         this.psFail = PublishSubject.create()
         this.http = netwrokController.getHttpService(HttpService::class.java)

@@ -1,21 +1,19 @@
 package com.rx.example.kotlintest001.view.presenter
 
-import android.support.v7.widget.RecyclerView
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.http.dao.Result
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
-import io.reactivex.subjects.PublishSubject
 
 /**
  */
-public interface ActivityRcvMainContract {
-
+public interface ActivityRcvMainContract
+{
     interface View
     {
-        fun toastShow(msg:String)
+        fun toastShow(msg: String)
 
-        fun showProgressDialog(msg:String)
+        fun showProgressDialog(msg: String)
 
         fun dismissProgressDialog()
     }
@@ -30,24 +28,22 @@ public interface ActivityRcvMainContract {
 
         fun rcvShowAddValue(adapterRcvMain: AdapterRcvMain):Int
 
-        fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int):Boolean
+        fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int, totalDataSize:Int):Boolean
 
-        fun sendHttpRetry(dataSize:Int)
+        fun sendHttpRetry(dataSize: Int)
 
-        fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg): Boolean
+        fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg, dataSize: Int): Boolean
 
-        fun listener(adapter:AdapterRcvMain)
-
-        fun isBtnClick():Boolean
+        fun listener(adapter: AdapterRcvMain)
 
         fun onDestroy()
     }
 
     interface Model
     {
-        fun saveDataSendHttpSuccess(httpRcvItemData:HttpRcvItemData)
+        fun saveDataSendHttpSuccess(httpRcvItemData: HttpRcvItemData)
 
-        fun saveDataSendHttpFail()
+        fun loadAllData()
 
         fun getDataSize():Int
 
@@ -56,8 +52,6 @@ public interface ActivityRcvMainContract {
         fun getHttpResults():MutableList<Result>
 
         fun isGetResultData():Boolean
-
-        fun isRcvAddSizeUp(lastSize: Int):Boolean
 
         fun onDestroy()
     }

@@ -72,7 +72,8 @@ import kotlin.properties.Delegates
         return httpRcvItemData!!
     }
 
-    fun delete() {
+    fun delete()
+    {
         realm.executeTransaction {
 
             realm.delete(Result::class.java)

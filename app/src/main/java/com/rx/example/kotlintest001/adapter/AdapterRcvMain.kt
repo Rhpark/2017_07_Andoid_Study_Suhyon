@@ -38,7 +38,8 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder> {
 
     override fun getItemCount() = listSize
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AdapterRcvMainViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): AdapterRcvMainViewHolder
+    {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_main_rcv, parent, false)
 
         return AdapterRcvMainViewHolder(view, psRcvItemSelected)
