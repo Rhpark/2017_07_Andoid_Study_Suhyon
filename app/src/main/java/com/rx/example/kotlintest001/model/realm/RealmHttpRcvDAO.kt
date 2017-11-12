@@ -5,7 +5,7 @@ import android.widget.Toast
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.model.http.dto.Info
 import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import io.reactivex.subjects.PublishSubject
 import io.realm.Realm
 import kotlin.properties.Delegates
@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
 /**
  * Created by Rhpark on 2017-10-30.
  */
- class RealmHttpRcvDTO
+ class RealmHttpRcvDAO
 {
     var httpRcvItemData: HttpRcvItemData? = null
     var psRealmlIsInserted: PublishSubject<Boolean>
@@ -61,7 +61,7 @@ import kotlin.properties.Delegates
         Logger.d("Result size " + rResults.size + " rInfo version " + rInfo.version)
 
         if ( httpRcvItemData == null )
-            httpRcvItemData = HttpRcvItemData(rResults,rInfo)
+            httpRcvItemData = HttpRcvItemData(rResults, rInfo)
         else
         {
             httpRcvItemData!!.info = rInfo

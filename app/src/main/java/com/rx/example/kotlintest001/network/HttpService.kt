@@ -1,8 +1,6 @@
 package com.rx.example.kotlintest001.network
 
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
-import okhttp3.ResponseBody
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import retrofit2.http.GET
 import retrofit2.Call
 import retrofit2.http.Query

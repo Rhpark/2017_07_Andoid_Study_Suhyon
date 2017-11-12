@@ -1,6 +1,6 @@
 package com.rx.example.kotlintest001.network.http
 
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import com.rx.example.kotlintest001.network.HttpService
 import com.rx.example.kotlintest001.network.NetworkController
 import io.reactivex.subjects.PublishSubject
@@ -30,5 +30,5 @@ public abstract class HttpBase
 
     open fun fail(msg:String) = psFail.onNext(msg)
 
-    open fun success(httpData:HttpRcvItemData) = psSuccess.onNext(httpData)
+    open fun success(httpData: HttpRcvItemData) = psSuccess.onNext(httpData)
 }

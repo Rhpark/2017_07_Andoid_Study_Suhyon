@@ -2,7 +2,7 @@ package com.rx.example.kotlintest001.view.presenter
 
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 
 /**
@@ -47,7 +47,7 @@ public interface ActivityRcvMainContract
 
         fun getDataSize():Int
 
-        fun getHttpData():HttpRcvItemData
+        fun getHttpData(): HttpRcvItemData
 
         fun getHttpResults():MutableList<Result>
 

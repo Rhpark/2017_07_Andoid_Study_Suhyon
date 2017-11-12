@@ -5,7 +5,7 @@ import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.ModelRcvMain
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 import io.reactivex.disposables.Disposable
 import kotlin.properties.Delegates

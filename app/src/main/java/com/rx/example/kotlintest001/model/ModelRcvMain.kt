@@ -2,8 +2,8 @@ package com.rx.example.kotlintest001.model
 
 import android.content.Context
 import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
+import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDAO
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
 
 /**
@@ -13,7 +13,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model
 {
     private val context: Context
 
-    val realmHttpRcvDTO by lazy{    RealmHttpRcvDTO() }
+    val realmHttpRcvDTO by lazy{    RealmHttpRcvDAO() }
 
     constructor(context: Context)
     {

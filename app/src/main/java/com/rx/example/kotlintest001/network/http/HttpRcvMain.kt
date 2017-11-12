@@ -1,14 +1,11 @@
 package com.rx.example.kotlintest001.network.http
 
-import android.os.SystemClock
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import io.reactivex.disposables.Disposable
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.properties.Delegates
 
 /**
  * Created by Rhpark on 2017-10-29.
