@@ -3,12 +3,11 @@ package com.rx.example.kotlintest001.model.realm.dto
 import android.content.Context
 import android.widget.Toast
 import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.model.http.dao.Info
-import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.Info
+import com.rx.example.kotlintest001.model.http.dto.Result
 import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import io.reactivex.subjects.PublishSubject
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import kotlin.properties.Delegates
 
 /**

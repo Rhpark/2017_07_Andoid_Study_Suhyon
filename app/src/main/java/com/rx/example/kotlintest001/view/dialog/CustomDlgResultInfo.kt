@@ -11,9 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.dao.Result
-import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
-import kotlin.properties.Delegates
+import com.rx.example.kotlintest001.model.http.dto.Result
 
 class CustomDlgResultInfo : Dialog
 {

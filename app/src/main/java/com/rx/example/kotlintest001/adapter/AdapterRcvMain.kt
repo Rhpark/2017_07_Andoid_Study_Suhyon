@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.Result
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -25,7 +25,7 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
         listSize = 0
     }
 
-    fun getItem(position:Int):Result = results.get(position)
+    fun getItem(position:Int): Result = results.get(position)
 
     fun addItemListSize()
     {
