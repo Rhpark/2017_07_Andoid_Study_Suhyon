@@ -1,8 +1,8 @@
 package com.rx.example.kotlintest001.model
 
 import android.content.Context
-import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDAO
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
 

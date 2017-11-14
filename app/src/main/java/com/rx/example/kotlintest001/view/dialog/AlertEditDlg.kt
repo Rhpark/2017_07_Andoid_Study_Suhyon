@@ -4,11 +4,10 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
-import android.text.InputType
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.rx.example.kotlintest001.deburg.Logger
+import io.reactivex.subjects.PublishSubject
 import kotlin.properties.Delegates
 
 /**
@@ -17,29 +16,33 @@ import kotlin.properties.Delegates
 public class AlertEditDlg
 {
     private val activity: AppCompatActivity
-    private val btnOk: DialogInterface.OnClickListener
-    private val btnCancel: DialogInterface.OnClickListener
 
     private var alertDlg:AlertDialog.Builder by Delegates.notNull()
     private var edtText:EditText by Delegates.notNull()
     private var imm: InputMethodManager by Delegates.notNull()
 
-    constructor(activity: AppCompatActivity, dataSize:Int, intputType:Int, title:String, subMsg:String,
-                btnOk: DialogInterface.OnClickListener, btnCancel: DialogInterface.OnClickListener)
+    lateinit var psBtnClick: PublishSubject<Boolean>
+
+    constructor(activity: AppCompatActivity, dataSize:Int, intputType:Int, title:String, subMsg:String)
     {
         this.activity = activity
-        this.btnOk = btnOk
-        this.btnCancel = btnCancel
         initData(title, subMsg, dataSize,intputType)
     }
 
+
     private fun initData(title:String, subMsg:String, dataSize:Int, intputType:Int)
     {
+        psBtnClick = PublishSubject.create()
+
         alertDlg = AlertDialog.Builder(activity)
         alertDlg.setTitle(title)
         alertDlg.setMessage(subMsg)
-        alertDlg.setPositiveButton("OK", btnOk)
-        alertDlg.setNegativeButton("Cancel", btnCancel)
+        alertDlg.setPositiveButton("OK", DialogInterface.OnClickListener {
+            dialogInterface, i -> psBtnClick.onNext(true)
+        })
+        alertDlg.setNegativeButton("Cancel", DialogInterface.OnClickListener {
+            dialogInterface, i -> psBtnClick.onNext(false)
+        })
 
         edtText = EditText(activity)
         edtText.setText("" + dataSize)

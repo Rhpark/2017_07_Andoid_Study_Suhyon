@@ -1,9 +1,8 @@
 package com.rx.example.kotlintest001.view.presenter
 
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
-import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
-import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
+import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 
 /**
  */
@@ -22,17 +21,13 @@ public interface ActivityRcvMainContract
     {
         var view: ActivityRcvMainContract.View
 
-        fun onStartSendHttp()
+        fun onStartSendHttp(adapter: AdapterRcvMain)
 
-        fun isCheckRetry(ceDlgRetry : AlertEditDlg):Boolean
-
-        fun rcvShowAddValue(adapterRcvMain: AdapterRcvMain):Int
-
-        fun isCheckAdapterItemSizeAdd(currentPosition: Int, itemCount:Int, totalDataSize:Int):Boolean
+        fun savedInstanceState(adapterRcvMain: AdapterRcvMain, adapterListItemCount: Int):Boolean
 
         fun sendHttpRetry(dataSize: Int)
 
-        fun isCheckSearchDlgBtnOk(ceDlgRetry : AlertEditDlg, dataSize: Int): Boolean
+        fun isCheckNetworkState(): Boolean
 
         fun listener(adapter: AdapterRcvMain)
 
@@ -47,7 +42,7 @@ public interface ActivityRcvMainContract
 
         fun getDataSize():Int
 
-        fun getHttpData(): HttpRcvItemData
+        fun getHttpData():HttpRcvItemData
 
         fun getHttpResults():MutableList<Result>
 

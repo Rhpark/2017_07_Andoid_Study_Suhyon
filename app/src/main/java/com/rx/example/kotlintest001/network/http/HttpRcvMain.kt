@@ -2,7 +2,7 @@ package com.rx.example.kotlintest001.network.http
 
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
-import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,9 +28,9 @@ public class HttpRcvMain : HttpBase
             {
                 if ( false == response!!.isSuccessful )
                 {
+                    Logger.e("isSuccessful Error ")
                     fail(RESPONE_FAIL)
                     successTime = 0L
-                    return
                 }
                 try
                 {

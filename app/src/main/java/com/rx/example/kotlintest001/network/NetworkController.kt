@@ -1,10 +1,8 @@
 package com.rx.example.kotlintest001.network
 
-//import android.webkit.CookieManager
 import android.content.Context
 import android.net.ConnectivityManager
 import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.network.http.HttpRcvMain
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,9 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
 import java.net.CookiePolicy
 import java.util.concurrent.TimeUnit
-import android.content.Context.CONNECTIVITY_SERVICE
-import kotlin.properties.Delegates
-
 
 /**
  */

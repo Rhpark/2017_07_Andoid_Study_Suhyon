@@ -4,16 +4,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.dto.Result
+import com.rx.example.kotlintest001.model.http.dao.Result
 import io.reactivex.subjects.PublishSubject
 
 /**
  */
 class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
 {
-    /*한번에 추가로 보여줄수 있는 갯수 20*/
-    companion object {  val MAX_ADD_VALUE = 20  }
-
     var listSize: Int
     var psRcvItemSelected: PublishSubject<Int>
 
@@ -25,16 +22,9 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
         listSize = 0
     }
 
-    fun getItem(position:Int): Result = results.get(position)
+    fun getItem(position:Int):Result = results.get(position)
 
-    fun addItemListSize()
-    {
-        val Totalsize = results.size
-        if ( Totalsize > MAX_ADD_VALUE )
-            listSize = MAX_ADD_VALUE
-        else
-            listSize = Totalsize
-    }
+    fun addItemListSize() { listSize = getResultSize() }
 
     override fun getItemCount() = listSize
 
@@ -45,11 +35,21 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
         return AdapterRcvMainViewHolder(view, psRcvItemSelected)
     }
 
-    override fun onBindViewHolder(holder: AdapterRcvMainViewHolder?, position: Int)
-    {
+    override fun onBindViewHolder(holder: AdapterRcvMainViewHolder?, position: Int) {
         holder?.bind(position
                 ,results.get(position).name!!.fullName()
                 ,results.get(position).gender!!
                 ,results.get(position).picture?.large!!)
+    }
+
+    fun getResultSize():Int
+    {
+        try{
+            return results.size
+        }
+        catch (e : Exception)
+        {
+            return 0
+        }
     }
 }

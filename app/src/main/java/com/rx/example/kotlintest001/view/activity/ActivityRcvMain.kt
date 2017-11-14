@@ -1,13 +1,10 @@
 package com.rx.example.kotlintest001.view.activity
 
 import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.InputType
-import android.widget.Button
 import android.widget.Toast
 import com.rx.example.kotlintest001.R
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
@@ -16,27 +13,19 @@ import com.rx.example.kotlintest001.view.dialog.AlertEditDlg
 import com.rx.example.kotlintest001.view.dialog.CustomDlgResultInfo
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainPresenter
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
+import kotlinx.android.synthetic.main.activity_main_rcv.*
 
 
 class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 {
-    private val rcvMain     by lazy{    findViewById(R.id.rcvMain)  as RecyclerView }
-    private val btnRetry    by lazy{    findViewById(R.id.btnRetry) as Button }
-    private val btnSearch   by lazy{    findViewById(R.id.btnSearch) as Button }
-
     private lateinit var pd : ProgressDialog
 
     private lateinit var adapterRcvMain: AdapterRcvMain
 
     private lateinit var presenter: ActivityRcvMainPresenter
 
-    private var dspbRecyclerViewItemclick:  Disposable by Delegates.notNull()   //recyclerview ItemSelect
+    private lateinit var dspbRecyclerViewItemclick:  Disposable
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -45,14 +34,16 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
         setContentView(R.layout.activity_main_rcv)
 
         adapterRcvMain = AdapterRcvMain()
+
         pd = ProgressDialog(this).apply { setCanceledOnTouchOutside(false) }
+
         presenter = ActivityRcvMainPresenter(this@ActivityRcvMain, applicationContext)
 
         initListener()
 
         rcvMain.adapter = adapterRcvMain
 
-        if ( null == savedInstanceState )   presenter.onStartSendHttp()
+        if ( null == savedInstanceState )   presenter.onStartSendHttp(adapterRcvMain)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?)
@@ -70,7 +61,6 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
             rcvMain.scrollToPosition(currentRcvPosition)
     }
 
-
     private fun initListener()
     {
         //buttonClick
@@ -85,85 +75,67 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
                 }
 
-        //recyclerViewBottomCheck -> ItemSizeUp
-        rcvMain.addOnScrollListener( object : RecyclerView.OnScrollListener()
-        {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                val currentposition = getCurrentRcvPosition()
-
-                if ( true == presenter.isCheckAdapterItemSizeAdd(currentposition, adapterRcvMain.itemCount, adapterRcvMain.results.size) )
-                    rcvMovoToPositon(presenter.rcvShowAddValue(adapterRcvMain))
-            }
-        })
         presenter.listener(adapterRcvMain)
     }
 
     private fun getCurrentRcvPosition() =
             (rcvMain.getLayoutManager() as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
 
-    private fun rcvMovoToPositon(currentPosition:Int)
-    {
-
-        Observable.timer(500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())//결과 스레드 설정
-                .subscribe {
-                    rcvMain.smoothScrollToPosition(currentPosition )
-                    dismissProgressDialog()
-                }
-    }
-
     private fun clickBtnRetry()
     {
-        var ceDlgRetry : AlertEditDlg? = null
-        val btnOkListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
-            if ( presenter.isCheckRetry(ceDlgRetry!!) )
-                presenter.sendHttpRetry(ceDlgRetry!!.getNumber())
-        }
+        if ( false == presenter.isCheckNetworkState() ) return
 
-        val btnCancelListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
-            ceDlgRetry?.closeKeyboard()
-        }
+        var ceDlgRetry  = AlertEditDlg(this, adapterRcvMain.getResultSize(), InputType.TYPE_CLASS_NUMBER
+                , "Retry send http data size", "Change the data size 1 ~ " + presenter.DefaultMaxDataSize)
 
-        ceDlgRetry = AlertEditDlg(this
-                , adapterRcvMain.results.size
-                , InputType.TYPE_CLASS_NUMBER
-                , "Retry send http data size"
-                , "Change the data size 1~5000"
-                , btnOkListener, btnCancelListener)
-        ceDlgRetry?.showDlg()
+        ceDlgRetry.showDlg()
+        ceDlgRetry.psBtnClick
+                .subscribe {
+
+                    ceDlgRetry.closeKeyboard()
+
+                    val isGetNumber = ceDlgRetry.isGetNumber()
+
+                    if ( it == true  && isGetNumber)
+                        presenter.sendHttpRetry(ceDlgRetry.getNumber())
+
+                    else if(false == isGetNumber)
+                        toastShow("Can not Change Data Size\n please Input Integer number")
+                }
     }
 
     private fun clickBtnSearch()
     {
-        var ceDlgSearch : AlertEditDlg? = null
-
-        val btnOkListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
-            if ( true == presenter.isCheckSearchDlgBtnOk( ceDlgSearch!!, adapterRcvMain.results.size ))
-            {
-                val value = ceDlgSearch!!.getNumber()
-                CustomDlgResultInfo(this, value, adapterRcvMain.results.get( value )).show()
-            }
+        val maxsize = ( adapterRcvMain.getResultSize() - 1 )
+        if ( maxsize < 0 )
+        {
+            toastShow("Empty Data,Please Retry")
+            return
         }
+        var ceDlgSearch = AlertEditDlg(this, maxsize, InputType.TYPE_CLASS_NUMBER
+                , "Search Data Type Number", "Search the data No. 0 ~ "+ maxsize)
 
-        val btnCancelListener= DialogInterface.OnClickListener {
-            dialogInterface, i ->
-            ceDlgSearch!!.closeKeyboard()
-        }
+        ceDlgSearch.showDlg()
 
-        val maxsize = ( adapterRcvMain.results.size - 1 )
-        ceDlgSearch = AlertEditDlg(this
-                , maxsize
-                , InputType.TYPE_CLASS_NUMBER
-                , "Search Data Type Number"
-                , "Search the data No. 0 ~ "+ maxsize
-                , btnOkListener, btnCancelListener)
-        ceDlgSearch?.showDlg()
+        ceDlgSearch.psBtnClick
+                .subscribe {
+
+                    ceDlgSearch.closeKeyboard()
+
+                    val isGetNumber = ceDlgSearch.isGetNumber()
+
+                    if ( it == true && isGetNumber)
+                    {
+                        val value = ceDlgSearch.getNumber()
+
+                        if ( value >=  adapterRcvMain.getResultSize())
+                            toastShow("Con not open Dialog, Please Check Search Number")
+                        else
+                            CustomDlgResultInfo(this, value, adapterRcvMain.results.get(value)).show()
+                    }
+                    else if ( false == isGetNumber )
+                        toastShow("Can not open dialoge\n please Input Integer number")
+                }
     }
 
     override fun dismissProgressDialog()

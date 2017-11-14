@@ -3,9 +3,9 @@ package com.rx.example.kotlintest001.model.realm.dto
 import android.content.Context
 import android.widget.Toast
 import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.model.http.dto.Info
-import com.rx.example.kotlintest001.model.http.dto.Result
-import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.Info
+import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
 import io.reactivex.subjects.PublishSubject
 import io.realm.Realm
 import kotlin.properties.Delegates
@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
 /**
  * Created by Rhpark on 2017-10-30.
  */
- class RealmHttpRcvDAO
+class RealmHttpRcvDAO
 {
     var httpRcvItemData: HttpRcvItemData? = null
     var psRealmlIsInserted: PublishSubject<Boolean>
@@ -74,9 +74,7 @@ import kotlin.properties.Delegates
     fun delete()
     {
         realm.executeTransaction {
-
-            realm.delete(Result::class.java)
-            realm.delete(Info::class.java)
+            realm.deleteAll()
             httpRcvItemData = null
         }
     }
