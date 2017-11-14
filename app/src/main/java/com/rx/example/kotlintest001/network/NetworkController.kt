@@ -68,8 +68,6 @@ public class NetworkController
 
         Logger.d("mobile "+mobile.isConnected +" ,wifi "+ wifi.isConnected)
 
-        if ( false == mobile.isConnected && false == wifi.isConnected)
-            return false
-        return true
+        return ( true == mobile.isConnected || true == wifi.isConnected )
     }
 }

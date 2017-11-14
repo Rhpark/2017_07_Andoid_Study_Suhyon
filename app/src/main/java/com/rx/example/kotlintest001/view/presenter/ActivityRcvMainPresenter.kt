@@ -5,10 +5,8 @@ import com.rx.example.kotlintest001.adapter.AdapterRcvMain
 import com.rx.example.kotlintest001.model.ModelRcvMain
 import com.rx.example.kotlintest001.network.NetworkController
 import com.rx.example.kotlintest001.network.http.HttpRcvMain
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import io.reactivex.disposables.Disposable
-import kotlin.properties.Delegates
-
 
 class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 {
@@ -21,10 +19,9 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     private var modelRcvMain:ModelRcvMain
 
     private var httpRcvmain:HttpRcvMain
-    private var dspbHttpSuccess:        Disposable by Delegates.notNull()   //CallBack Http Success
-    private var dspbHttpFail:           Disposable by Delegates.notNull()   //CallBack Http Fail
-
-    private var dspbRealmIsInserted:    Disposable by Delegates.notNull()   //CallBack Realm Save
+    private lateinit var dspbHttpSuccess: Disposable        //CallBack Http Success
+    private lateinit var dspbHttpFail: Disposable           //CallBack Http Fail
+    private lateinit var dspbRealmIsInserted: Disposable    //CallBack Realm Save
 
     constructor(view: ActivityRcvMainContract.View,context:Context)
     {
@@ -117,11 +114,13 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
                 }
     }
 
-    private fun rcvAdapterUpdate(httpRcvItemData: HttpRcvItemData, adapterRcvMain: AdapterRcvMain)
+    private fun rcvAdapterUpdate(httpRcvItemData: HttpRcvItemData?, adapterRcvMain: AdapterRcvMain)
     {
-        adapterRcvMain.results = httpRcvItemData.results!!
-        adapterRcvMain.addItemListSize()
-        adapterRcvMain.notifyDataSetChanged()
+        httpRcvItemData?.let {
+            adapterRcvMain.results = it.results
+            adapterRcvMain.addItemListSize()
+            adapterRcvMain.notifyDataSetChanged()
+        }
     }
 
     override fun isCheckNetworkState(): Boolean

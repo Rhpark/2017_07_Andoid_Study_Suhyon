@@ -8,7 +8,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.rx.example.kotlintest001.deburg.Logger
 import io.reactivex.subjects.PublishSubject
-import kotlin.properties.Delegates
 
 /**
  * Created by Rhpark on 2017-10-29.
@@ -17,9 +16,9 @@ public class AlertEditDlg
 {
     private val activity: AppCompatActivity
 
-    private var alertDlg:AlertDialog.Builder by Delegates.notNull()
-    private var edtText:EditText by Delegates.notNull()
-    private var imm: InputMethodManager by Delegates.notNull()
+    private lateinit var alertDlg:AlertDialog.Builder
+    private lateinit var edtText:EditText
+    private lateinit var imm: InputMethodManager
 
     lateinit var psBtnClick: PublishSubject<Boolean>
 

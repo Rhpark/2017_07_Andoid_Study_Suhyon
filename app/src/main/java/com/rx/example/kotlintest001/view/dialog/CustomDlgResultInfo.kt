@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.view.Window
 import com.bumptech.glide.Glide
 import com.rx.example.kotlintest001.R
-import com.rx.example.kotlintest001.model.http.dao.Result
+import com.rx.example.kotlintest001.model.http.dto.Result
 import kotlinx.android.synthetic.main.custom_dlg_result_info.*
 
 class CustomDlgResultInfo : Dialog
@@ -43,10 +43,11 @@ class CustomDlgResultInfo : Dialog
         tvEmail.setText(result.email)
         tvGender.setText(result.gender)
         tvCount.setText("No. "+selectNumber)
-        tvCity.setText(result.location?.city)
+        tvCity.setText(result.location.city)
         tvRegistered.setText(result.registered)
-        tvName.setText(result.name?.fullName())
+        tvName.setText(result.name.fullName())
 
-        Glide.with(this.context).load(result.picture?.large).into(ivPicture)
+        result.picture?.let { Glide.with(this.context).load(it.large).into(ivPicture) }
+
     }
 }

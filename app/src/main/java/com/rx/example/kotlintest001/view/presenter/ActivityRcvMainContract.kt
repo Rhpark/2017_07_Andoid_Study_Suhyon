@@ -1,8 +1,7 @@
 package com.rx.example.kotlintest001.view.presenter
 
 import com.rx.example.kotlintest001.adapter.AdapterRcvMain
-import com.rx.example.kotlintest001.model.http.dao.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 
 /**
  */
@@ -40,11 +39,7 @@ public interface ActivityRcvMainContract
 
         fun loadAllData()
 
-        fun getDataSize():Int
-
-        fun getHttpData():HttpRcvItemData
-
-        fun getHttpResults():MutableList<Result>
+        fun getHttpData(): HttpRcvItemData?
 
         fun isGetResultData():Boolean
 

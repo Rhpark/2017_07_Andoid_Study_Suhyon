@@ -2,7 +2,7 @@ package com.rx.example.kotlintest001.network.http
 
 import com.rx.example.kotlintest001.deburg.Logger
 import com.rx.example.kotlintest001.network.NetworkController
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,24 +26,27 @@ public class HttpRcvMain : HttpBase
         http.getDatList(dataSize).enqueue(object : Callback<HttpRcvItemData> {
             override fun onResponse(call: Call<HttpRcvItemData>?, response: Response<HttpRcvItemData>?)
             {
-                if ( false == response!!.isSuccessful )
-                {
-                    Logger.e("isSuccessful Error ")
-                    fail(RESPONE_FAIL)
-                    successTime = 0L
-                }
-                try
-                {
-                    successTime = System.currentTimeMillis()
-                    success(response.body()!!)
-                }
-                catch (e: NullPointerException)
-                {
-                    Logger.e("Receive Data Error ", e.printStackTrace().toString())
-                    fail(RESPONE_DATA_ERROR)
+                response?.let {
+                    if ( false == response.isSuccessful )
+                    {
+                        Logger.e("isSuccessful Error ")
+                        fail(RESPONE_FAIL)
+                        successTime = 0L
+                    }
+                    try
+                    {
+                        successTime = System.currentTimeMillis()
+                        response.body()?.let { success(it) }
+
+                    }
+                    catch (e: NullPointerException)
+                    {
+                        Logger.e("Receive Data Error ", e.printStackTrace().toString() )
+                        fail(RESPONE_DATA_ERROR)
+                    }
                 }
                 endTime = System.currentTimeMillis()
-                Logger.d("success Time " + (successTime - startTime) + " , end time " + ( endTime - startTime))
+                Logger.d("success Time " + (successTime - startTime) + " , end time " + (endTime - startTime) )
                 System.gc()
             }
 

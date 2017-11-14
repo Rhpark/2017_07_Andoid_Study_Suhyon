@@ -3,22 +3,21 @@ package com.rx.example.kotlintest001.model.realm.dto
 import android.content.Context
 import android.widget.Toast
 import com.rx.example.kotlintest001.deburg.Logger
-import com.rx.example.kotlintest001.model.http.dao.Info
-import com.rx.example.kotlintest001.model.http.dao.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
+import com.rx.example.kotlintest001.model.http.dto.Info
+import com.rx.example.kotlintest001.model.http.dto.Result
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
 import io.reactivex.subjects.PublishSubject
 import io.realm.Realm
-import kotlin.properties.Delegates
 
 /**
  * Created by Rhpark on 2017-10-30.
  */
-class RealmHttpRcvDAO
+class RealmHttpRcvDTO
 {
     var httpRcvItemData: HttpRcvItemData? = null
     var psRealmlIsInserted: PublishSubject<Boolean>
 
-    private var realm : Realm by Delegates.notNull()
+    private var realm: Realm
 
     constructor() : super()
     {
@@ -56,19 +55,23 @@ class RealmHttpRcvDAO
 
     fun loadData() : HttpRcvItemData
     {
-        var rInfo = realm.where(Info::class.java).findFirst()
-        var rResults = realm.where(Result::class.java).findAll()
-        Logger.d("Result size " + rResults.size + " rInfo version " + rInfo.version)
+        var realmInfo = realm.where(Info::class.java).findFirst()
+        var realmResults = realm.where(Result::class.java).findAll()
+
+        val realmHttpRcvItemData = HttpRcvItemData(realmResults, realmInfo)
+        Logger.d("Result size " + realmResults.size + " rInfo version " + realmInfo.version)
 
         if ( httpRcvItemData == null )
-            httpRcvItemData = HttpRcvItemData(rResults, rInfo)
+            httpRcvItemData = realmHttpRcvItemData
         else
         {
-            httpRcvItemData!!.info = rInfo
-            httpRcvItemData!!.results = rResults
+            httpRcvItemData?.let {
+                it.info = realmInfo
+                it.results = realmResults
+            }
         }
 
-        return httpRcvItemData!!
+        return realmHttpRcvItemData
     }
 
     fun delete()
@@ -83,9 +86,7 @@ class RealmHttpRcvDAO
     {
         val resSize = realm.where(Result::class.java).findAll().size
         Logger.d("resSize " + resSize)
-        if ( resSize > 0 )
-            return true
-        return false
+        return ( resSize > 0 )
     }
 
     fun onDestroy()

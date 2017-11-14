@@ -1,9 +1,8 @@
 package com.rx.example.kotlintest001.model
 
 import android.content.Context
-import com.rx.example.kotlintest001.model.http.dao.Result
-import com.rx.example.kotlintest001.model.http.dto.HttpRcvItemData
-import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDAO
+import com.rx.example.kotlintest001.model.http.dao.HttpRcvItemData
+import com.rx.example.kotlintest001.model.realm.dto.RealmHttpRcvDTO
 import com.rx.example.kotlintest001.view.presenter.ActivityRcvMainContract
 
 /**
@@ -13,7 +12,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model
 {
     private val context: Context
 
-    val realmHttpRcvDTO by lazy{    RealmHttpRcvDAO() }
+    val realmHttpRcvDTO by lazy{ RealmHttpRcvDTO() }
 
     constructor(context: Context)
     {
@@ -30,13 +29,9 @@ class ModelRcvMain : ActivityRcvMainContract.Model
 
     private fun saveHttpData(httpRcvItemData: HttpRcvItemData) = realmHttpRcvDTO.insertAll(httpRcvItemData, context)
 
-    override fun getDataSize(): Int = realmHttpRcvDTO.httpRcvItemData!!.results!!.size
-
     override fun isGetResultData(): Boolean = realmHttpRcvDTO.isGetData()
 
-    override fun getHttpData(): HttpRcvItemData = realmHttpRcvDTO.httpRcvItemData!!
-
-    override fun getHttpResults(): MutableList<Result> = realmHttpRcvDTO.httpRcvItemData!!.results!!
+    override fun getHttpData(): HttpRcvItemData? = realmHttpRcvDTO.httpRcvItemData
 
     override fun loadAllData() {    realmHttpRcvDTO.loadData()  }
 
