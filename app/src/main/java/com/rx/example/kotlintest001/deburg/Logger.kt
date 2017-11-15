@@ -73,7 +73,6 @@ object Logger {
     private fun contianValue(Tag: String): Int {
         return if (IS_MY_TAG == true) {
             if (IsMyTagCheck(Tag) == true) INCLUDE_TAGNAME else UNINCLUDE_TAGNAME
-
         } else DETATIVE_IS_MY_TAGNAME
     }
 
@@ -93,7 +92,7 @@ object Logger {
     fun v(Tag: String, msg: String?) {
         if ( false == isLogcatWrite( contianValue( tag ))) return
 
-        Log.v(Tag + tag , buildMessage(msg))
+        Log.v(tag + "> $Tag " , buildMessage(msg))
     }
 
     /*****Log.e */
@@ -106,7 +105,7 @@ object Logger {
     fun e(Tag: String, msg: String) {
         if ( false == isLogcatWrite( contianValue( tag ))) return
 
-        Log.e(Tag + tag , buildMessage(msg))
+        Log.e(tag + "> $Tag " , buildMessage(msg))
     }
 
     /*****Log.i */
@@ -125,7 +124,7 @@ object Logger {
     fun i(Tag: String, msg: String?) {
         if ( false == isLogcatWrite( contianValue( tag ))) return
 
-        Log.i(Tag + tag , buildMessage(msg))
+        Log.i(tag + "> $Tag " , buildMessage(msg))
     }
 
     /*****Log.w */
@@ -144,7 +143,7 @@ object Logger {
     fun w(Tag: String, msg: String?) {
         if ( false == isLogcatWrite( contianValue( tag ))) return
 
-        Log.w(Tag + tag , buildMessage(msg))
+        Log.w(tag + "> $Tag " , buildMessage(msg))
     }
 
     /*****Log.d */
@@ -165,6 +164,6 @@ object Logger {
     {
         if ( false == isLogcatWrite( contianValue( tag ))) return
 
-        Log.d(Tag + tag , buildMessage(msg))
+        Log.d(tag + "> $Tag " , buildMessage(msg))
     }
 }

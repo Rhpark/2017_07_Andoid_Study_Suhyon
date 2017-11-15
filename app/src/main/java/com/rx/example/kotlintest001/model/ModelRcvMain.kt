@@ -25,7 +25,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model
         saveHttpData(httpRcvItemData)
     }
 
-    private fun deleteAllData() {   realmHttpRcvDTO.delete()    }
+    private fun deleteAllData() { realmHttpRcvDTO.delete() }
 
     private fun saveHttpData(httpRcvItemData: HttpRcvItemData) = realmHttpRcvDTO.insertAll(httpRcvItemData, context)
 
@@ -33,7 +33,7 @@ class ModelRcvMain : ActivityRcvMainContract.Model
 
     override fun getHttpData(): HttpRcvItemData? = realmHttpRcvDTO.httpRcvItemData
 
-    override fun loadAllData() {    realmHttpRcvDTO.loadData()  }
+    override fun loadAllData() { realmHttpRcvDTO.loadData() }
 
     override fun onDestroy()
     {

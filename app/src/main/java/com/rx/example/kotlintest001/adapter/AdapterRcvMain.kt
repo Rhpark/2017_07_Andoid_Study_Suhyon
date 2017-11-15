@@ -47,12 +47,7 @@ class AdapterRcvMain : RecyclerView.Adapter<AdapterRcvMainViewHolder>
 
     fun getResultSize():Int
     {
-        try{
-            return results.size
-        }
-        catch (e : Exception)
-        {
-            return 0
-        }
+        return results?.let { it.size }
+        return 0
     }
 }

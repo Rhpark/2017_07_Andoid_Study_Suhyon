@@ -25,7 +25,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 
     private lateinit var presenter: ActivityRcvMainPresenter
 
-    private lateinit var dspbRecyclerViewItemclick:  Disposable
+    private lateinit var rxDspbRecyclerViewItemclick:  Disposable
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -43,7 +43,8 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 
         rcvMain.adapter = adapterRcvMain
 
-        if ( null == savedInstanceState )   presenter.onStartSendHttp(adapterRcvMain)
+        if (null == savedInstanceState)
+            presenter.onStartSendHttp(adapterRcvMain)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?)
@@ -57,7 +58,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
         val adapterListItemCount = savedInstanceState.getInt("adapterListItemCount")
         Logger.d(" if currentRcvPosition $currentRcvPosition  adapterListItemCount $adapterListItemCount")
 
-        if ( presenter.savedInstanceState(adapterRcvMain, adapterListItemCount))
+        if (presenter.savedInstanceState(adapterRcvMain, adapterListItemCount))
             rcvMain.scrollToPosition(currentRcvPosition)
     }
 
@@ -69,7 +70,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
         btnSearch.setOnClickListener { clickBtnSearch() }
 
         //recyclerViewItemCheck
-        dspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
+        rxDspbRecyclerViewItemclick = adapterRcvMain.psRcvItemSelected
                 .subscribe {
                     Logger.d()
                     CustomDlgResultInfo(this, it, adapterRcvMain.getItem(it)).show()
@@ -83,21 +84,20 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 
     private fun clickBtnRetry()
     {
-        if ( false == presenter.isCheckNetworkState() ) return
+        if (false == presenter.isCheckNetworkState()) return
 
-        var ceDlgRetry  = AlertEditDlg(this, adapterRcvMain.getResultSize(), InputType.TYPE_CLASS_NUMBER
-                , "Retry send http data size", "Change the data size 1 ~ " + presenter.DefaultMaxDataSize)
+        var alertEdtDlgRetry  = AlertEditDlg(this, adapterRcvMain.getResultSize(), InputType.TYPE_CLASS_NUMBER
+                , "Retry send httpService data size", "Change the data size 1 ~ " + presenter.DefaultMaxDataSize)
 
-        ceDlgRetry.showDlg()
-        ceDlgRetry.psBtnClick
+        alertEdtDlgRetry.showDlg()
+        alertEdtDlgRetry.rxPsBtnClick
                 .subscribe {
+                    alertEdtDlgRetry.closeKeyboard()
 
-                    ceDlgRetry.closeKeyboard()
+                    val isGetNumber = alertEdtDlgRetry.isGetEditNumber()
 
-                    val isGetNumber = ceDlgRetry.isGetNumber()
-
-                    if ( it == true  && isGetNumber)
-                        presenter.sendHttpRetry(ceDlgRetry.getNumber())
+                    if (it == true  && isGetNumber)
+                        presenter.sendHttpRetry(alertEdtDlgRetry.getEditNumber())
 
                     else if(false == isGetNumber)
                         toastShow("Can not Change Data Size\n please Input Integer number")
@@ -106,46 +106,46 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
 
     private fun clickBtnSearch()
     {
-        val maxsize = ( adapterRcvMain.getResultSize() - 1 )
-        if ( maxsize < 0 )
+        val maxsize = (adapterRcvMain.getResultSize() - 1)
+        if (maxsize < 0)
         {
             toastShow("Empty Data,Please Retry")
             return
         }
-        var ceDlgSearch = AlertEditDlg(this, maxsize, InputType.TYPE_CLASS_NUMBER
+        var alertEdtDlgSearch = AlertEditDlg(this, maxsize, InputType.TYPE_CLASS_NUMBER
                 , "Search Data Type Number", "Search the data No. 0 ~ "+ maxsize)
 
-        ceDlgSearch.showDlg()
+        alertEdtDlgSearch.showDlg()
 
-        ceDlgSearch.psBtnClick
+        alertEdtDlgSearch.rxPsBtnClick
                 .subscribe {
 
-                    ceDlgSearch.closeKeyboard()
+                    alertEdtDlgSearch.closeKeyboard()
 
-                    val isGetNumber = ceDlgSearch.isGetNumber()
+                    val isGetNumber = alertEdtDlgSearch.isGetEditNumber()
 
-                    if ( it == true && isGetNumber)
+                    if (it == true && isGetNumber)
                     {
-                        val value = ceDlgSearch.getNumber()
+                        val value = alertEdtDlgSearch.getEditNumber()
 
-                        if ( value >=  adapterRcvMain.getResultSize())
+                        if (value >=  adapterRcvMain.getResultSize())
                             toastShow("Con not open Dialog, Please Check Search Number")
                         else
                             CustomDlgResultInfo(this, value, adapterRcvMain.results.get(value)).show()
                     }
-                    else if ( false == isGetNumber )
+                    else if (false == isGetNumber)
                         toastShow("Can not open dialoge\n please Input Integer number")
                 }
     }
 
     override fun dismissProgressDialog()
     {
-        if ( pd.isShowing)    pd.dismiss()
+        if (pd.isShowing) pd.dismiss()
     }
 
     override fun showProgressDialog(msg:String)
     {
-        if ( pd.isShowing )
+        if (pd.isShowing)
             pd.dismiss()
         pd.setMessage(msg)
         pd.show()
@@ -167,7 +167,7 @@ class ActivityRcvMain : AppCompatActivity(), ActivityRcvMainContract.View
     {
         super.onDestroy()
         Logger.d()
-        dspbRecyclerViewItemclick.dispose()
+        rxDspbRecyclerViewItemclick.dispose()
         presenter.onDestroy()
     }
 }

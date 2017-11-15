@@ -17,9 +17,9 @@ class AdapterRcvMainViewHolder(itemView: View, clickSubject : PublishSubject<Int
 
     fun bind(count:Int,name:String,gender:String, imgUrl:String?)
     {
-        itemView.tvCount.setText("No."+ count )
-        itemView.tvName.setText( name )
-        itemView.tvGender.setText( gender)
-        imgUrl?.let { Glide.with(itemView).load( imgUrl).into(itemView.ivPicture) }
+        itemView.tvCount.setText("No."+ count)
+        itemView.tvName.setText(name)
+        itemView.tvGender.setText(gender)
+        imgUrl?.let { Glide.with(itemView).load(imgUrl).into(itemView.ivPicture) }
     }
 }

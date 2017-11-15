@@ -59,15 +59,15 @@ public class NetworkController
 
     fun isNetworkCheck():Boolean
     {
-        val networkCheck = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        Logger.d()
-
-        val wifi    = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-        val mobile  = networkCheck.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-
-        Logger.d("mobile "+mobile.isConnected +" ,wifi "+ wifi.isConnected)
-
-        return ( true == mobile.isConnected || true == wifi.isConnected )
+        connectivityManager.activeNetworkInfo?.let {
+            if (true == it.isConnected)
+            {
+                Logger.d("NetworkType " + it.type)
+                return (it.type == ConnectivityManager.TYPE_WIFI || it.type == ConnectivityManager.TYPE_MOBILE)
+            }
+        }
+        return false
     }
 }

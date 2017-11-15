@@ -16,12 +16,13 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     private var networkController: NetworkController
 
-    private var modelRcvMain:ModelRcvMain
+    private var modelRcvMain: ModelRcvMain
 
-    private var httpRcvmain:HttpRcvMain
-    private lateinit var dspbHttpSuccess: Disposable        //CallBack Http Success
-    private lateinit var dspbHttpFail: Disposable           //CallBack Http Fail
-    private lateinit var dspbRealmIsInserted: Disposable    //CallBack Realm Save
+    private var httpRcvmain: HttpRcvMain
+
+    private lateinit var rxDspbHttpSuccess: Disposable        //CallBack Http Success
+    private lateinit var rxDspbHttpFail: Disposable           //CallBack Http Fail
+    private lateinit var rxDspbRealmIsInserted: Disposable    //CallBack Realm Save
 
     constructor(view: ActivityRcvMainContract.View,context:Context)
     {
@@ -43,7 +44,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     {
         view.toastShow(msg)
 
-        if ( true == adapterUpdateFromRealm(adapterRcvMain))
+        if (true == adapterUpdateFromRealm(adapterRcvMain))
             view.toastShow("Load data, from realm")
 
         view.dismissProgressDialog()
@@ -51,7 +52,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     private fun adapterUpdateFromRealm(adapterRcvMain: AdapterRcvMain):Boolean {
 
-        if ( modelRcvMain.isGetResultData())
+        if (modelRcvMain.isGetResultData())
         {
             modelRcvMain.loadAllData()
             rcvAdapterUpdate(modelRcvMain.getHttpData(), adapterRcvMain)
@@ -62,7 +63,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun savedInstanceState(adapterRcvMain: AdapterRcvMain, adapterListItemCount: Int):Boolean {
 
-        if ( adapterUpdateFromRealm( adapterRcvMain ))
+        if (adapterUpdateFromRealm(adapterRcvMain))
         {
             adapterRcvMain.listSize = adapterListItemCount
             adapterRcvMain.notifyDataSetChanged()
@@ -73,7 +74,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun onStartSendHttp(adapter: AdapterRcvMain)
     {
-        if ( false == isCheckNetworkState() || modelRcvMain.isGetResultData())
+        if (false == isCheckNetworkState() || modelRcvMain.isGetResultData())
             adapterUpdateFromRealm(adapter)
 
         else
@@ -82,7 +83,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     private fun sendHttp(dataSize:Int)
     {
-        if ( false == networkController.isNetworkCheck())
+        if (false == networkController.isNetworkCheck())
             view.toastShow("Please check, Network state")
 
         else
@@ -94,7 +95,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun sendHttpRetry(dataSize:Int)
     {
-        if ( dataSize  < 1 || dataSize > DefaultMaxDataSize)
+        if (dataSize  < 1 || dataSize > DefaultMaxDataSize)
             view.toastShow("Can not Change Data Size\n please Input Number Size 1 ~ " + DefaultMaxDataSize)
 
         else
@@ -104,13 +105,13 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
     override fun listener(adapter:AdapterRcvMain)
     {
         //httpCallBack
-        dspbHttpSuccess = httpRcvmain.psSuccess.subscribe { sendHttpSuccess(it, adapter) }
+        rxDspbHttpSuccess = httpRcvmain.rxPsSuccess.subscribe { sendHttpSuccess(it as HttpRcvItemData, adapter) }
 
-        dspbHttpFail = httpRcvmain.psFail.subscribe { sendHttpFail(it, adapter) }
+        rxDspbHttpFail = httpRcvmain.rxPsFail.subscribe { sendHttpFail(it, adapter) }
 
-        dspbRealmIsInserted = modelRcvMain.realmHttpRcvDTO.psRealmlIsInserted
+        rxDspbRealmIsInserted = modelRcvMain.realmHttpRcvDTO.psRealmlIsInserted
                 .subscribe {
-                    if ( it  == false)  view.toastShow("Data Save Fail")
+                    if (it  == false) view.toastShow("Data Save Fail")
                 }
     }
 
@@ -125,8 +126,7 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun isCheckNetworkState(): Boolean
     {
-
-        if ( false == networkController.isNetworkCheck())
+        if (false == networkController.isNetworkCheck())
         {
             view.toastShow("Please check, Network state")
             return false
@@ -136,9 +136,9 @@ class ActivityRcvMainPresenter : ActivityRcvMainContract.Presenter
 
     override fun onDestroy()
     {
-        dspbHttpSuccess.dispose()
-        dspbHttpFail.dispose()
-        dspbRealmIsInserted.dispose()
+        rxDspbHttpSuccess.dispose()
+        rxDspbHttpFail.dispose()
+        rxDspbRealmIsInserted.dispose()
         modelRcvMain.onDestroy()
     }
 }

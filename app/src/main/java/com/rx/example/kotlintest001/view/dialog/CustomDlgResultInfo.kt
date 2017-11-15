@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.custom_dlg_result_info.*
 
 class CustomDlgResultInfo : Dialog
 {
-    val selectNumber:Int
-    val result: Result
+    private val selectNumber:Int
+    private val result: Result
 
     constructor(context: Context?, selectNumber: Int, result: Result) : super(context)
     {
@@ -47,7 +47,6 @@ class CustomDlgResultInfo : Dialog
         tvRegistered.setText(result.registered)
         tvName.setText(result.name.fullName())
 
-        result.picture?.let { Glide.with(this.context).load(it.large).into(ivPicture) }
-
+        result.picture?.large?.let { Glide.with(this.context).load(it).into(ivPicture) }
     }
 }

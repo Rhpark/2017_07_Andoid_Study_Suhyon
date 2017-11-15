@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.support.v7.app.AppCompatActivity
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import com.rx.example.kotlintest001.deburg.Logger
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -20,33 +19,32 @@ public class AlertEditDlg
     private lateinit var edtText:EditText
     private lateinit var imm: InputMethodManager
 
-    lateinit var psBtnClick: PublishSubject<Boolean>
+    lateinit var rxPsBtnClick: PublishSubject<Boolean>
 
-    constructor(activity: AppCompatActivity, dataSize:Int, intputType:Int, title:String, subMsg:String)
+    constructor(activity: AppCompatActivity, dataSize:Int, inputType:Int, title:String, subMsg:String)
     {
         this.activity = activity
-        initData(title, subMsg, dataSize,intputType)
+        initData(title, subMsg, dataSize, inputType)
     }
 
-
-    private fun initData(title:String, subMsg:String, dataSize:Int, intputType:Int)
+    private fun initData(title:String, subMsg:String, dataSize:Int, inputType:Int)
     {
-        psBtnClick = PublishSubject.create()
+        rxPsBtnClick = PublishSubject.create()
 
         alertDlg = AlertDialog.Builder(activity)
         alertDlg.setTitle(title)
         alertDlg.setMessage(subMsg)
         alertDlg.setPositiveButton("OK", DialogInterface.OnClickListener {
-            dialogInterface, i -> psBtnClick.onNext(true)
+            dialogInterface, i -> rxPsBtnClick.onNext(true)
         })
         alertDlg.setNegativeButton("Cancel", DialogInterface.OnClickListener {
-            dialogInterface, i -> psBtnClick.onNext(false)
+            dialogInterface, i -> rxPsBtnClick.onNext(false)
         })
 
         edtText = EditText(activity)
         edtText.setText("" + dataSize)
         edtText.requestFocus()
-        edtText.inputType = intputType
+        edtText.inputType = inputType
         edtText.setSelection(edtText.text.toString().length)
 
         alertDlg.setView(edtText)
@@ -54,9 +52,9 @@ public class AlertEditDlg
         imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    fun getNumber():Int = edtText.text.toString().toInt()
+    fun getEditNumber():Int = edtText.text.toString().toInt()
 
-    fun isGetNumber():Boolean
+    fun isGetEditNumber():Boolean
     {
         try
         {
@@ -65,8 +63,6 @@ public class AlertEditDlg
         }
         catch (e:NumberFormatException)
         {
-            Logger.e(e.printStackTrace().toString())
-            e.printStackTrace()
             return false
         }
     }
